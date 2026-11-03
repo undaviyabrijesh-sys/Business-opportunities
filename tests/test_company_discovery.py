@@ -40,10 +40,16 @@ def test_buyer_and_seller_search_are_separate_and_labelled():
 
     class Session:
         def get(self, *args, **kwargs):
-            return Response()
+            query = kwargs.get("params", {}).get("q", "")
+            response = Response()
+            if "manufacturer" in query or "distributor" in query:
+                response.text = '<div class="result"><a class="result__a" href="https://seller.example/">Seller Company</a><a class="result__snippet">Manufacturer</a></div>'
+            else:
+                response.text = '<div class="result"><a class="result__a" href="https://buyer.example/">Buyer Company</a><a class="result__snippet">Imports product</a></div>'
+            return response
 
     result = search_company_leads("Titanium Dioxide", session=Session(), enrich_contacts=False)
     assert result["query"] == "Titanium Dioxide"
     assert result["buyers"][0]["title"] == "Buyer Company"
-    assert result["sellers"][0]["title"] == "Buyer Company"
+    assert result["sellers"][0]["title"] == "Seller Company"
     assert "Unverified prospect" in result["buyers"][0]["verification"]
