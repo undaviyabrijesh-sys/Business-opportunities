@@ -13,6 +13,7 @@ from src.connectors.tenders import CPPP_ADVANCED_SEARCH, CPPP_HOME, GEM_BIDS
 from src.connectors.imd import IMDClient
 from src.connectors.news import search_product_news, search_market_research, PIB_RSS
 from src.connectors.live_market import fetch_agmarknet_prices, fetch_india_trade, fetch_global_import_markets
+from src.connectors.company_discovery import search_company_leads
 
 ROOT = Path(__file__).parent
 
@@ -237,7 +238,7 @@ with tabs[3]:
 
 with tabs[4]:
     st.subheader("Online product search engine")
-    st.caption("Search once. The desk checks the product catalogue in this repository, indexed CBI/ITC research, market news and (after HS confirmation) UN Comtrade trade statistics.")
+    st.caption("Enter a product once to discover potential buyers/importers and sellers/manufacturers from public web results, including published business contact details where available.")
 
     with st.form("online_product_search", clear_on_submit=False):
         search_query = st.text_input(
@@ -246,7 +247,8 @@ with tabs[4]:
             placeholder="e.g. HPMC, lactose, turmeric, aluminium foil, solar panels",
             key="online_product_query",
         )
-        search_submitted = st.form_submit_button("Search online", type="primary", use_container_width=True)
+        lead_market = st.selectbox("Search market", ["India + Global", "India only"])
+        search_submitted = st.form_submit_button("Find buyers & sellers", type="primary", use_container_width=True)
 
     if search_submitted:
         query = search_query.strip()
@@ -254,7 +256,12 @@ with tabs[4]:
             st.warning("Enter a product or industry to search.")
         else:
             result = {"query": query, "research": [], "news": [], "errors": []}
-            with st.spinner(f"Searching online sources for {query}..."):
+            with st.spinner(f"Finding potential buyers and sellers for {query}..."):
+                try:
+                    result["leads"] = search_company_leads(query, market=lead_market, max_per_side=6)
+                    result["errors"].extend(result["leads"].get("errors", []))
+                except Exception as exc:
+                    result["errors"].append("Buyer / seller discovery: " + str(exc))
                 try:
                     result["research"] = search_market_research(query)
                 except Exception as exc:
