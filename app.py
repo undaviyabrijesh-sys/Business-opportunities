@@ -195,7 +195,7 @@ with tabs[2]:
         confirmed = st.checkbox("I verified this HS code for exact product form, grade and year", key="live_hs_confirm")
         flow = st.selectbox("Trade flow", ["Exports", "Imports"], key="live_trade_flow")
         years = date.today().year
-        periods = ",".join(str(y) for y in range(years - 3, years + 1))
+        periods = ",".join(str(y) for y in range(years - 4, years))
         if st.button("Fetch UN Comtrade records", key="fetch_comtrade"):
             if not confirmed:
                 st.warning("Confirm HS classification first. Catalogue codes are candidate mappings only.")
