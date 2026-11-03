@@ -77,9 +77,8 @@ def assess_capital_fit(funding_need: float, capital_band: str) -> dict:
     low, high = capital_band_limits(capital_band)
     if funding_need <= 0:
         status = "not_estimated"
-    elif funding_need < low:
-        status = "below_selected_band"
     elif funding_need <= high:
+        # The selected amount is available capacity, not a minimum project size.
         status = "within_selected_band"
     else:
         status = "above_selected_band"
