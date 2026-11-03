@@ -3,6 +3,7 @@ from src.connectors.company_discovery import ResultParser, unwrap_url, search_co
 
 def test_unwrap_duckduckgo_redirect():
     assert unwrap_url("https://duckduckgo.com/l/?uddg=https%3A%2F%2Fexample.com") == "https://example.com"
+    assert unwrap_url("//duckduckgo.com/l/?uddg=https%3A%2F%2Fexample.org") == "https://example.org"
 
 
 def test_parser_extracts_multiple_search_results():
