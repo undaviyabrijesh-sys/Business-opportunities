@@ -163,12 +163,14 @@ with tabs[2]:
     left.metric("AGMARKNET / OGD", "Configured" if ogd_key else "API key needed")
     right.metric("UN Comtrade", "API key configured" if comtrade_key else "Public preview mode")
     st.markdown("#### India mandi prices")
+    market_item = suggestions[0]["name"] if suggestions else item
+    st.caption("Canonical commodity query: " + str(market_item))
     if st.button("Fetch live mandi prices", key="fetch_mandi"):
         if not ogd_key:
             st.error("Add OGD_API_KEY in Streamlit app Secrets or server environment.")
         else:
             try:
-                result = fetch_agmarknet_prices(item, ogd_key)
+                result = fetch_agmarknet_prices(market_item, ogd_key)
                 st.caption("Source: " + result["source"] + " | Retrieved: " + result["retrieved_at"] + " | Matched rows: " + str(result["matched_records"]))
                 if result["records"]:
                     df = pd.DataFrame(result["records"])
