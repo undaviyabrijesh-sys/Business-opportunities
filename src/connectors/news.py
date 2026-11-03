@@ -37,3 +37,23 @@ def search_official_news(item: str) -> list[dict]:
     rows = fetch_rss(PIB_RSS)
     lowered = " ".join(terms).casefold()
     return [row for row in rows if lowered in (row["title"] + " " + row["summary"]).casefold()]
+
+
+
+def search_market_research(item: str) -> list[dict]:
+    """Search publicly indexed CBI/ITC/Global Trade Helpdesk research for an item.
+
+    Results are returned as discovery links from Google News RSS. This is not
+    a direct CBI/ITC API and does not imply every result is an official study.
+    """
+    clean_item = " ".join(str(item).split())
+    if not clean_item:
+        return []
+    terms = (
+        f'"{clean_item}" (market OR demand OR import OR export OR regulation OR buyer) '
+        '(site:cbi.eu/market-information OR site:intracen.org OR site:globaltradehelpdesk.org)'
+    )
+    query = quote_plus(terms)
+    return fetch_rss(
+        f"https://news.google.com/rss/search?q={query}&hl=en&gl=GB&ceid=GB:en"
+    )
