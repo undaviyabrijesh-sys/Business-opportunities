@@ -65,7 +65,7 @@ c1.metric("Item", item or "—")
 c2.metric("Scope", scope)
 c3.metric("Business model", model)
 c4.metric("Capital profile", capital)
-tabs = st.tabs(["Overview","Opportunity engine","Live market data","Trade & export","Weather","News & trends","Tenders & buyers","Commercial model","Sources"])
+tabs = st.tabs(["Overview","Opportunity engine","Live market data","Trade & export","International intelligence","Weather","News & trends","Tenders & buyers","Commercial model","Sources"])
 with tabs[0]:
     st.subheader(f"Opportunity workspace: {item}")
     st.info("Live ranking is withheld until price, trade, buyer and risk signals are connected and validated.")
@@ -234,7 +234,33 @@ with tabs[3]:
     st.checkbox("Compare India export growth with destination imports",key="trade_compare")
     st.checkbox("Check destination tariffs and product standards",key="tariff_check")
     st.checkbox("Check freight, port, insurance and payment risk",key="logistics_check")
+
 with tabs[4]:
+    st.subheader("International market intelligence")
+    st.write(f"Research product: **{item}**")
+    st.caption("These are external research portals, not live API integrations. Open a source, search the product and destination market, then record the source date and evidence in your opportunity assessment.")
+    st.markdown("#### Market research and export readiness")
+    st.markdown("- [CBI Market Information](https://www.cbi.eu/market-information) — sector and product studies, European buyer requirements, trends and market-entry guidance.")
+    st.markdown("- [Global Trade Helpdesk](https://globaltradehelpdesk.org/) — product/country trade opportunities, import demand, tariffs, regulations and potential buyer discovery. Coverage varies by market.")
+    st.markdown("- [India Trade Connect](https://www.trade.gov.in/) — India exporter support, market access guidance, export trends, FTA benefits and government/export-promotion connections.")
+    st.divider()
+    st.markdown("#### Trade statistics and export potential")
+    st.markdown("- [ITC Trade Map](https://www.trademap.org/Index.aspx) — monthly, quarterly and annual trade values, quantities, growth, market shares, competing suppliers and company directory.")
+    st.markdown("- [ITC Export Potential Map](https://exportpotential.intracen.org/en/) — modelled export potential and unrealised potential by product, exporter and destination market.")
+    st.markdown("- [ITC Market Analysis Tools](https://marketanalysis.intracen.org/en) — access point for Trade Map, Export Potential Map, Market Access Map and related tools.")
+    st.divider()
+    st.markdown("#### Tariffs, rules and market-entry requirements")
+    st.markdown("- [European Commission Access2Markets](https://trade.ec.europa.eu/access-to-markets/en/home) — tariffs, taxes, rules of origin, customs procedures, product requirements and trade barriers.")
+    st.info("For Access2Markets, choose the relevant origin country, destination and product code. It is particularly useful for EU market entry; do not assume every tool has complete coverage for every country pair.")
+    st.warning("Important: these portals provide research and decision support, not guaranteed buyers or confirmed orders. Trade Map company information and any buyer leads must be independently verified. Export-potential figures are model estimates, not sales forecasts.")
+    st.markdown("#### Research checklist for this item")
+    st.write(f"1. Search **{item}** and verify the exact product form, grade and HS code.")
+    st.write("2. Compare destination import growth, supplier concentration and unit values.")
+    st.write("3. Check tariffs, rules of origin, standards, certificates and import procedures.")
+    st.write("4. Verify buyer identity, purchase history, payment risk and actual demand before quoting.")
+    st.caption("No automated scraping or API ingestion is claimed for these portals. We will integrate structured data only where official access, terms and repeatable schemas permit it.")
+
+with tabs[5]:
     st.subheader("Weather and operational disruption")
     st.write("Identify relevant production, warehouse, port or route locations, then enter their IMD IDs.")
     st.markdown("[Official IMD API portal](https://api.imd.gov.in/public/) · [API reference](https://api.imd.gov.in/public/api_reference.html)")
@@ -248,7 +274,7 @@ with tabs[4]:
             if not station_id.strip() and not district_id.strip(): st.warning("Enter an IMD identifier.")
         except Exception as exc: st.error(f"IMD request failed: {exc}")
     st.caption("Show issue time, validity, location, units and distinguish observations from forecasts.")
-with tabs[5]:
+with tabs[6]:
     st.subheader("News and emerging trends")
     st.write(f"Product query: {item}")
     st.markdown(f"- [Search item-related news](https://news.google.com/search?q={quote_plus(item)}&hl=en-IN&gl=IN&ceid=IN%3Aen)")
@@ -260,7 +286,7 @@ with tabs[5]:
             else: st.info("No headlines returned.")
         except Exception as exc: st.error(f"News feed request failed: {exc}")
     st.caption("News is a discovery signal, not verified demand. Corroborate with data and buyers.")
-with tabs[6]:
+with tabs[7]:
     st.subheader("Tenders, buyers and seller leads")
     st.write(f"Search terms: {item}")
     st.markdown(f"- [CPPP active tenders]({CPPP_HOME})")
@@ -270,7 +296,7 @@ with tabs[6]:
     st.markdown("- [APEDA Indian seller leads](https://agriexchange.apeda.gov.in/Seller/SellLead)")
     st.caption("CPPP may require CAPTCHA; no bypass is attempted. Check closing date, EMD, eligibility and corrigenda. APEDA leads are not pre-verified.")
     st.write(", ".join([item, f"{item} supply", f"{item} procurement", f"{item} tender"]))
-with tabs[7]:
+with tabs[8]:
     st.subheader("Commercial viability — unit economics")
     st.caption("Use actual quotes only; this calculator is not a live margin estimate.")
     a,b,c=st.columns(3)
@@ -287,7 +313,7 @@ with tabs[7]:
     y.metric("Contribution / unit",f"₹{margin:,.2f}")
     z.metric("Total contribution",f"₹{margin*quantity:,.2f}")
     st.caption("Separately model duties, taxes, packaging, wastage, insurance, commission, finance, rejection, FX and working capital.")
-with tabs[8]:
+with tabs[9]:
     st.subheader("Source coverage and setup")
     st.markdown("- OGD/AGMARKNET: configure `OGD_API_KEY` for documented API access.")
     st.markdown("- IMD: use documented endpoints and check current access requirements.")
@@ -295,6 +321,7 @@ with tabs[8]:
     st.markdown("- News: PIB RSS and item-keyword Google News RSS are discovery feeds.")
     st.markdown("- CPPP: official tender search is linked; CAPTCHA is not bypassed.")
     st.markdown("- APEDA: public export reporting and buyer/seller leads; verify counterparties.")
+    st.markdown("- CBI, Global Trade Helpdesk, ITC Trade Map, Export Potential Map, Access2Markets and India Trade Connect: linked research portals; not yet ingested as live APIs.")
     st.markdown("See `docs/DATA_SOURCES.md` and `docs/ITEM_RESEARCH_AND_EXPORTS.md`.")
 st.divider()
 st.caption("India-first business research. Sample rankings are illustrative. Verify HS codes, counterparties, regulatory requirements and commercial quotes.")
