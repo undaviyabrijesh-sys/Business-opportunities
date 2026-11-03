@@ -2,59 +2,49 @@
 
 ## Item-first search
 
-A user can enter a free-text item name (for example, "turmeric powder", "pharmaceutical-grade lactose", "aluminium extrusion" or "coconut coir pith"). The search process:
+A user enters any product name (e.g. "turmeric powder", "pharmaceutical-grade lactose", "aluminium extrusion" or "coconut coir pith"). Search should:
 
-1. Normalize aliases and identify likely product category.
-2. Suggest HS code(s) with a confidence and classification version. Do not guess one HS code silently for broad or multi-use products.
-3. Assemble a dossier: India production/sourcing regions, mandi or benchmark prices when relevant, Indian import/export history, top trade partners, global import demand, seasonality, relevant industrial indicators and current policy restrictions.
-4. Attach current weather/forecast/warnings to relevant production regions and transport corridors.
-5. Find related headlines and official announcements, clearly separating news from measured demand.
-6. Search tender and buyer/seller lead sources.
-7. Show next validation tasks, not a claim that the item will make money.
+1. Normalize aliases and identify category.
+2. Suggest plausible HS codes with confidence and classification version. Never silently force one HS code onto an ambiguous product.
+3. Assemble Indian production/sourcing regions, mandi/benchmark prices when relevant, import/export history, top trade partners, global import demand, seasonality and industrial indicators.
+4. Attach current weather and warnings to evidence-backed production and logistics locations.
+5. Find related headlines and official announcements, separating news from measured demand.
+6. Find export-market options, buyer/seller leads and relevant tenders.
+7. Build next validation tasks; do not claim that an item will make money.
 
 ## Weather
 
-Primary Indian source: [IMD API portal](https://api.imd.gov.in/public/) and [official API reference](https://api.imd.gov.in/public/api_reference.html). The reference lists city 7-day forecasts, forecasts by latitude/longitude, current weather, district nowcasts, district warnings, rainfall, port warnings, highway warnings and agromet advisories.
+Primary source: [IMD API portal](https://api.imd.gov.in/public/) and [API reference](https://api.imd.gov.in/public/api_reference.html). The official reference lists city 7-day forecasts, location-based forecasts, current weather, district nowcasts/warnings, rainfall, port warnings, highway warnings and agromet advisories.
 
-Weather needs a geographic context. Product search should ask for or infer candidate production and logistics locations from reliable product/market evidence, then show:
-- forecast issued time and validity range;
-- temperature/rainfall/wind fields with units;
-- warning level and source;
-- exposed location and reason it matters (crop production, warehousing, port or road);
-- whether the signal is short-term forecast, observation or long-term climate projection.
+The dashboard must show forecast issued time, validity, location, units, warning severity, source link and why the place is relevant (production region, warehouse, port or route). Distinguish observations, short-term forecasts and climate projections. A forecast is an operational risk signal, not proof of a price move.
 
-Do not infer a price move directly from a forecast. Show potential operational impact and require corroborating production, transport or market evidence.
+## News and trends
 
-## News and emerging trends
+- Government releases: [PIB RSS](https://pib.gov.in/RssMain.aspx?ModId=6&Lang=1&Regid=1).
+- Product news: Google News RSS search is discovery-only; preserve publisher/date/link and seek corroboration.
+- Tag by aliases, HS, country, sector and event type (capacity expansion, investment, subsidy, restriction, tariff, procurement, shortage, recall, weather disruption).
+- Summaries are hypotheses supported by links, not proof of orders or sales.
 
-- Official India releases: [PIB RSS](https://pib.gov.in/RssMain.aspx?ModId=6&Lang=1&Regid=1).
-- Market coverage: product-keyword RSS searches from Google News can be used as discovery only. Deduplicate by canonical URL/title and preserve publisher/date. Add independent reputable sources and company filings over time.
-- Tag items by product aliases, HS code, country, sector and event type (capacity expansion, investment, subsidy, ban/restriction, tariff, procurement, shortage, recall, weather disruption).
-- Summarize as a hypothesis with supporting/contradicting sources. News volume is not measured sales or a verified buyer order.
+## Export opportunity dossier
 
-## Export opportunity research
+For every product:
+- India export trend/destinations: [Commerce TIA](https://trade-analytics.commerce.gov.in/public/indiaTrade).
+- Agri/processed food export stats, exporter directory and buyer/seller leads: [APEDA AgriExchange](https://agriexchange.apeda.gov.in/Home/).
+- Global importer demand and supplier competition: [UN Comtrade](https://comtrade.un.org/).
+- Commodity benchmark: [World Bank Pink Sheet](https://www.worldbank.org/en/research/commodity-markets).
+- Export control and licensing: [DGFT](https://www.dgft.gov.in/) plus FSSAI/BIS or sector regulators.
 
-For each selected product:
-- India export trend and destinations from [Department of Commerce TIA](https://trade-analytics.commerce.gov.in/public/indiaTrade).
-- Agriculture/processed food export statistics and market intelligence from [APEDA AgriExchange](https://agriexchange.apeda.gov.in/Home/), including buyer leads, seller leads and exporter directory.
-- Global country import demand and supplier competition from [UN Comtrade](https://comtrade.un.org/).
-- Global commodity price benchmarks from [World Bank Pink Sheet](https://www.worldbank.org/en/research/commodity-markets).
-- Export control/eligibility notifications from [DGFT](https://www.dgft.gov.in/) and product regulators such as FSSAI/BIS where relevant.
+Rank destinations using import value/volume trend, supplier mix, Indian export trend, unit values (not transaction prices), tariff/NTM research, logistics fit, currency, product standards and market concentration. Confirm correct HS code and destination rules before recommending a route.
 
-An export shortlist should display import value/volume trend, supplier countries, India export trend, unit values (not interpreted as transaction prices), market growth, concentration, tariff/NTM research tasks, logistics/port fit, currency and quality standards. Validate each product's precise HS code and destination market rules.
+## Tenders and leads
 
-## Tenders and buyer leads
+- [CPPP eProcurement](https://eprocure.gov.in/eprocure/app): active tenders, corrigenda, bid awards and searches by item title, organisation, location, value and date. Advanced search may require CAPTCHA; no bypass. Bidding can require registration and a Digital Signature Certificate.
+- [GeM bids](https://bidplus.gem.gov.in/all-bids): public procurement discovery.
+- [APEDA buyer leads](https://agriexchange.apeda.gov.in/Buyer/MyBuyOffers) and [seller leads](https://agriexchange.apeda.gov.in/Seller/SellLead): useful for agri/processed-food counterparties. APEDA notes leads are user-submitted and must be verified.
+- Other sectors: add relevant Export Promotion Councils, public trade fair directories, lawful public importer registries and licensed trade-data services.
 
-- [CPPP eProcurement](https://eprocure.gov.in/eprocure/app) lists active tenders, corrigenda and bid awards; latest tender updates are displayed on the official portal. Its advanced search includes work/item title, organisation, department, product category, location, value and dates. Search may require CAPTCHA and bidder registration/DSC for submission; do not bypass access controls.
-- [GeM bids](https://bidplus.gem.gov.in/all-bids) is another government procurement discovery point.
-- [APEDA buyer leads](https://agriexchange.apeda.gov.in/Buyer/MyBuyOffers) and [seller leads](https://agriexchange.apeda.gov.in/Seller/SellLead) are useful for agricultural/processed-food counterparties. Leads are user submitted; credentials must be independently verified.
-- For non-agri exports, later connector sources should include relevant Export Promotion Councils, trade fair/exhibitor directories, public importer registries and paid trade-data providers where legally licensed.
+Tender schema: title, tender ID/reference, buyer, item/specification, quantity, estimated value if published, location, publish/close dates and timezone, EMD, eligibility, documents, corrigenda, award state, source timestamp. Alert on closing dates and modifications.
 
-Tender records should include title, tender ID/reference, buyer organisation, item/specification, quantity, estimated value (if published), location, publication date, closing date/time/timezone, EMD, eligibility, document link, corrigenda, award status and source timestamp. Highlight closing deadlines and corrigenda.
+## Limitations
 
-## Important limitations
-
-- CPPP advanced search includes CAPTCHA; no CAPTCHA bypass or unauthorised scraping.
-- APEDA says buyer/seller leads are supplied by third parties and users should verify counterparties.
-- TIA/TradeStat pages may expose portal exports rather than a stable public API. Use verified downloads and preserve source vintage.
-- Weather and news explain possible disruptions/signals; they do not alone prove a profitable trade.
+CPPP CAPTCHA must not be bypassed. APEDA leads are not guaranteed or pre-verified. TIA/TradeStat may expose downloads rather than stable APIs. Weather/news explain possible signals but do not alone prove a profitable trade.
