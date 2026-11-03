@@ -1,6 +1,521 @@
 [
-  {"product_id":"rice","name":"Rice","category":"Agriculture","hs_codes":["1006"],"unit":"tonne","markets":["India","Global"],"status":"starter_mapping"},
-  {"product_id":"turmeric","name":"Turmeric","category":"Spices","hs_codes":["091030"],"unit":"tonne","markets":["India","Global"],"status":"starter_mapping"},
-  {"product_id":"cotton","name":"Cotton","category":"Textiles & agriculture","hs_codes":["5201"],"unit":"tonne","markets":["India","Global"],"status":"starter_mapping"},
-  {"product_id":"pharma_excipients","name":"Pharmaceutical excipients","category":"Specialty chemicals","hs_codes":[],"unit":"kg","markets":["India","Global"],"status":"hs_mapping_required"}
+  {
+    "product_id": "rice",
+    "name": "Rice",
+    "category": "Agriculture & food",
+    "aliases": [
+      "basmati rice",
+      "non basmati rice",
+      "parboiled rice",
+      "broken rice",
+      "paddy"
+    ],
+    "hs_codes": [
+      "1006"
+    ],
+    "hs_status": "candidate_heading_verify_subheading",
+    "unit": "tonne",
+    "markets": [
+      "India",
+      "Global"
+    ]
+  },
+  {
+    "product_id": "turmeric",
+    "name": "Turmeric",
+    "category": "Agriculture & spices",
+    "aliases": [
+      "turmeric powder",
+      "haldi",
+      "dried turmeric",
+      "curcumin raw material"
+    ],
+    "hs_codes": [
+      "091030"
+    ],
+    "hs_status": "candidate_code_verify_form",
+    "unit": "tonne",
+    "markets": [
+      "India",
+      "Global"
+    ]
+  },
+  {
+    "product_id": "cotton",
+    "name": "Cotton",
+    "category": "Agriculture & textiles",
+    "aliases": [
+      "raw cotton",
+      "cotton lint",
+      "cotton fibre"
+    ],
+    "hs_codes": [
+      "5201"
+    ],
+    "hs_status": "candidate_heading_verify_grade",
+    "unit": "tonne",
+    "markets": [
+      "India",
+      "Global"
+    ]
+  },
+  {
+    "product_id": "wheat",
+    "name": "Wheat",
+    "category": "Agriculture & food",
+    "aliases": [
+      "wheat grain",
+      "durum wheat",
+      "milling wheat"
+    ],
+    "hs_codes": [
+      "1001"
+    ],
+    "hs_status": "candidate_heading_verify_type",
+    "unit": "tonne",
+    "markets": [
+      "India",
+      "Global"
+    ]
+  },
+  {
+    "product_id": "maize",
+    "name": "Maize",
+    "category": "Agriculture & feed",
+    "aliases": [
+      "corn",
+      "yellow maize",
+      "maize grain"
+    ],
+    "hs_codes": [
+      "1005"
+    ],
+    "hs_status": "candidate_heading_verify_type",
+    "unit": "tonne",
+    "markets": [
+      "India",
+      "Global"
+    ]
+  },
+  {
+    "product_id": "chickpeas",
+    "name": "Chickpeas",
+    "category": "Agriculture & pulses",
+    "aliases": [
+      "chana",
+      "gram",
+      "kabuli chana",
+      "desi chana"
+    ],
+    "hs_codes": [
+      "071320"
+    ],
+    "hs_status": "candidate_code_verify_processing",
+    "unit": "tonne",
+    "markets": [
+      "India",
+      "Global"
+    ]
+  },
+  {
+    "product_id": "cumin",
+    "name": "Cumin",
+    "category": "Agriculture & spices",
+    "aliases": [
+      "jeera",
+      "cumin seed",
+      "cumin powder"
+    ],
+    "hs_codes": [
+      "090931",
+      "090932"
+    ],
+    "hs_status": "candidate_codes_verify_whole_or_ground",
+    "unit": "tonne",
+    "markets": [
+      "India",
+      "Global"
+    ]
+  },
+  {
+    "product_id": "groundnut",
+    "name": "Groundnut",
+    "category": "Agriculture & oilseeds",
+    "aliases": [
+      "peanut",
+      "groundnut kernel",
+      "peanuts"
+    ],
+    "hs_codes": [
+      "1202"
+    ],
+    "hs_status": "candidate_heading_verify_shelled",
+    "unit": "tonne",
+    "markets": [
+      "India",
+      "Global"
+    ]
+  },
+  {
+    "product_id": "soybean_meal",
+    "name": "Soybean meal",
+    "category": "Agriculture & animal feed",
+    "aliases": [
+      "soya meal",
+      "soy meal",
+      "de-oiled cake",
+      "DOC"
+    ],
+    "hs_codes": [
+      "2304"
+    ],
+    "hs_status": "candidate_heading_verify_spec",
+    "unit": "tonne",
+    "markets": [
+      "India",
+      "Global"
+    ]
+  },
+  {
+    "product_id": "onion",
+    "name": "Onion",
+    "category": "Agriculture & fresh produce",
+    "aliases": [
+      "fresh onion",
+      "red onion",
+      "dehydrated onion"
+    ],
+    "hs_codes": [
+      "070310"
+    ],
+    "hs_status": "candidate_code_fresh_only",
+    "unit": "tonne",
+    "markets": [
+      "India",
+      "Global"
+    ]
+  },
+  {
+    "product_id": "pharma_lactose",
+    "name": "Pharmaceutical-grade lactose",
+    "category": "Pharma & excipients",
+    "aliases": [
+      "lactose monohydrate",
+      "pharma lactose",
+      "spray dried lactose",
+      "lactose"
+    ],
+    "hs_codes": [],
+    "hs_status": "classification_required_check_purity_and_form",
+    "unit": "kg",
+    "markets": [
+      "India",
+      "Global"
+    ]
+  },
+  {
+    "product_id": "pharma_excipients",
+    "name": "Pharmaceutical excipients",
+    "category": "Pharma & excipients",
+    "aliases": [
+      "tablet excipients",
+      "film coating material",
+      "pharma coating powder",
+      "hpmc",
+      "povidone",
+      "peg 6000"
+    ],
+    "hs_codes": [],
+    "hs_status": "classification_required_product_specific",
+    "unit": "kg",
+    "markets": [
+      "India",
+      "Global"
+    ]
+  },
+  {
+    "product_id": "hpmc",
+    "name": "HPMC",
+    "category": "Specialty chemicals & pharma",
+    "aliases": [
+      "hypromellose",
+      "hydroxypropyl methylcellulose",
+      "pharma grade hpmc"
+    ],
+    "hs_codes": [],
+    "hs_status": "classification_required_grade_and_use",
+    "unit": "kg",
+    "markets": [
+      "India",
+      "Global"
+    ]
+  },
+  {
+    "product_id": "titanium_dioxide",
+    "name": "Titanium dioxide",
+    "category": "Chemicals & pigments",
+    "aliases": [
+      "tio2",
+      "titanium white",
+      "rutile tio2",
+      "anatase tio2"
+    ],
+    "hs_codes": [
+      "282300"
+    ],
+    "hs_status": "candidate_code_verify_grade",
+    "unit": "tonne",
+    "markets": [
+      "India",
+      "Global"
+    ]
+  },
+  {
+    "product_id": "polyethylene",
+    "name": "Polyethylene",
+    "category": "Polymers & plastics",
+    "aliases": [
+      "hdpe",
+      "ldpe",
+      "lldpe",
+      "polyethylene resin"
+    ],
+    "hs_codes": [
+      "3901"
+    ],
+    "hs_status": "candidate_heading_verify_polymer_form",
+    "unit": "tonne",
+    "markets": [
+      "India",
+      "Global"
+    ]
+  },
+  {
+    "product_id": "polypropylene",
+    "name": "Polypropylene",
+    "category": "Polymers & plastics",
+    "aliases": [
+      "pp resin",
+      "pp granules",
+      "polypropylene resin"
+    ],
+    "hs_codes": [
+      "3902"
+    ],
+    "hs_status": "candidate_heading_verify_polymer_form",
+    "unit": "tonne",
+    "markets": [
+      "India",
+      "Global"
+    ]
+  },
+  {
+    "product_id": "aluminium",
+    "name": "Aluminium",
+    "category": "Metals",
+    "aliases": [
+      "aluminium ingot",
+      "aluminum",
+      "aluminium billet",
+      "aluminium scrap"
+    ],
+    "hs_codes": [
+      "7601"
+    ],
+    "hs_status": "candidate_heading_ingot_only_scrap_other",
+    "unit": "tonne",
+    "markets": [
+      "India",
+      "Global"
+    ]
+  },
+  {
+    "product_id": "copper",
+    "name": "Copper",
+    "category": "Metals",
+    "aliases": [
+      "copper cathode",
+      "copper rod",
+      "copper scrap",
+      "copper wire"
+    ],
+    "hs_codes": [
+      "7403"
+    ],
+    "hs_status": "candidate_heading_refined_copper_only",
+    "unit": "tonne",
+    "markets": [
+      "India",
+      "Global"
+    ]
+  },
+  {
+    "product_id": "steel",
+    "name": "Steel",
+    "category": "Metals",
+    "aliases": [
+      "hot rolled coil",
+      "hr coil",
+      "cold rolled coil",
+      "crc",
+      "steel sheet",
+      "stainless steel"
+    ],
+    "hs_codes": [],
+    "hs_status": "classification_required_product_form_and_grade",
+    "unit": "tonne",
+    "markets": [
+      "India",
+      "Global"
+    ]
+  },
+  {
+    "product_id": "cement",
+    "name": "Cement",
+    "category": "Construction materials",
+    "aliases": [
+      "opc cement",
+      "ppc cement",
+      "clinker",
+      "white cement"
+    ],
+    "hs_codes": [
+      "2523"
+    ],
+    "hs_status": "candidate_heading_verify_type",
+    "unit": "tonne",
+    "markets": [
+      "India",
+      "Global"
+    ]
+  },
+  {
+    "product_id": "urea",
+    "name": "Urea",
+    "category": "Fertilizers & chemicals",
+    "aliases": [
+      "fertilizer urea",
+      "agricultural urea"
+    ],
+    "hs_codes": [
+      "310210"
+    ],
+    "hs_status": "candidate_code_verify_grade",
+    "unit": "tonne",
+    "markets": [
+      "India",
+      "Global"
+    ]
+  },
+  {
+    "product_id": "industrial_machinery",
+    "name": "Industrial machinery",
+    "category": "Machinery & equipment",
+    "aliases": [
+      "processing machinery",
+      "packaging machine",
+      "industrial equipment"
+    ],
+    "hs_codes": [],
+    "hs_status": "classification_required_function_and_machine_type",
+    "unit": "unit",
+    "markets": [
+      "India",
+      "Global"
+    ]
+  },
+  {
+    "product_id": "solar_modules",
+    "name": "Solar photovoltaic modules",
+    "category": "Renewable energy",
+    "aliases": [
+      "solar panel",
+      "pv module",
+      "solar modules"
+    ],
+    "hs_codes": [
+      "854143"
+    ],
+    "hs_status": "candidate_code_verify_cell_or_module",
+    "unit": "unit",
+    "markets": [
+      "India",
+      "Global"
+    ]
+  },
+  {
+    "product_id": "corrugated_boxes",
+    "name": "Corrugated packaging boxes",
+    "category": "Packaging",
+    "aliases": [
+      "corrugated box",
+      "carton box",
+      "shipping carton"
+    ],
+    "hs_codes": [
+      "481910"
+    ],
+    "hs_status": "candidate_code_verify_material_and_construction",
+    "unit": "unit",
+    "markets": [
+      "India",
+      "Global"
+    ]
+  },
+  {
+    "product_id": "glass_bottles",
+    "name": "Glass bottles",
+    "category": "Packaging & materials",
+    "aliases": [
+      "glass container",
+      "pharma glass bottle",
+      "food glass jar"
+    ],
+    "hs_codes": [
+      "701090"
+    ],
+    "hs_status": "candidate_heading_verify_capacity_and_type",
+    "unit": "unit",
+    "markets": [
+      "India",
+      "Global"
+    ]
+  },
+  {
+    "product_id": "coconut_coir",
+    "name": "Coconut coir products",
+    "category": "Natural fibres & horticulture",
+    "aliases": [
+      "coir pith",
+      "coco peat",
+      "coir fibre",
+      "coco coir"
+    ],
+    "hs_codes": [],
+    "hs_status": "classification_required_product_form",
+    "unit": "tonne",
+    "markets": [
+      "India",
+      "Global"
+    ]
+  },
+  {
+    "product_id": "castor_oil",
+    "name": "Castor oil",
+    "category": "Oils & oleochemicals",
+    "aliases": [
+      "castor oil refined",
+      "castor oil industrial",
+      "ricinus oil"
+    ],
+    "hs_codes": [
+      "151530"
+    ],
+    "hs_status": "candidate_code_verify_grade",
+    "unit": "tonne",
+    "markets": [
+      "India",
+      "Global"
+    ]
+  }
 ]
