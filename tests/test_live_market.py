@@ -73,3 +73,31 @@ def test_comtrade_normalization_preserves_reporter_for_global_markets():
     assert row["reporter"] == "USA"
     assert row["flow"] == "Imports"
     assert row["trade_value_usd"] == 987654
+
+
+
+def test_global_import_fetch_uses_all_reporters(monkeypatch):
+    import src.connectors.live_market as live
+
+    class FakeClient:
+        def __init__(self, api_key=None):
+            self.api_key = api_key
+
+        def query(self, **kwargs):
+            assert kwargs["reporter_code"] == "ALL"
+            assert kwargs["partner_code"] == "0"
+            assert kwargs["flow_code"] == "M"
+            return {"data": [{
+                "period": "2024",
+                "reporterDesc": "Germany",
+                "partnerDesc": "World",
+                "flowDesc": "Imports",
+                "cmdCode": "391239",
+                "primaryValue": 250000,
+            }], "messages": []}
+
+    monkeypatch.setattr(live, "ComtradeClient", FakeClient)
+    result = live.fetch_global_import_markets("391239", "2024")
+    assert result["source_status"] == "live_records"
+    assert result["records"][0]["reporter"] == "Germany"
+    assert result["records"][0]["trade_value_usd"] == 250000
