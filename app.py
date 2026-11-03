@@ -4,7 +4,7 @@ from urllib.parse import quote_plus
 import pandas as pd
 import streamlit as st
 from src.demo_data import sample_opportunities
-from src.search import item_dossier_plan
+from src.search import item_dossier_plan, load_products
 from src.connectors.apeda import opportunity_links
 from src.connectors.tenders import CPPP_ADVANCED_SEARCH, CPPP_HOME, GEM_BIDS
 from src.connectors.imd import IMDClient
@@ -22,10 +22,25 @@ with st.sidebar:
     model = st.selectbox("Business model", ["Trading / distribution", "Export", "Import", "Manufacturing / processing", "Tender supply"])
     region = st.selectbox("Base location", ["Ahmedabad, Gujarat", "Other Gujarat", "Other India", "Global"])
     capital = st.select_slider("Indicative capital", options=["Below ₹5 lakh", "₹5–25 lakh", "₹25–50 lakh", "₹50 lakh–₹2 crore", "Above ₹2 crore"], value="₹50 lakh–₹2 crore")
-    st.caption("Live source connections require credentials or supported downloads.")
+    catalogue = load_products()
+    categories = ["All sectors"] + sorted({p["category"] for p in catalogue})
+    category_filter = st.selectbox("Sector / product category", categories)
+    opportunity_types = ["All opportunity types", "Domestic sourcing spread", "Export market screening", "Industrial demand screening"]
+    opportunity_filter = st.selectbox("Opportunity type", opportunity_types)
+    min_score = st.slider("Minimum opportunity score", 0, 100, 0, 5)
+    confidence_filter = st.selectbox("Evidence confidence", ["All confidence levels", "High", "Medium", "Low (sample)"])
+    mapping_filter = st.selectbox("HS classification", ["All products", "Candidate HS mapping", "HS classification pending"])
+    show_illustrative = st.checkbox("Include illustrative/sample opportunities", value=True)
+    st.caption("Filters narrow the current catalogue and opportunity records. Capital is a research profile, not yet a validated capex screen.")
 
 plan = item_dossier_plan(item.strip() or "Turmeric")
 suggestions = plan["suggestions"]
+if category_filter != "All sectors":
+    suggestions = [x for x in suggestions if x["category"] == category_filter]
+if mapping_filter == "Candidate HS mapping":
+    suggestions = [x for x in suggestions if x.get("hs_codes")]
+elif mapping_filter == "HS classification pending":
+    suggestions = [x for x in suggestions if not x.get("hs_codes")]
 if suggestions:
     rec = suggestions[0]
     st.caption(f"Catalogue match: {rec['name']} · HS mapping: {chr(44).join(rec.get('hs_codes', [])) or 'Needs expert classification'}")
@@ -44,8 +59,20 @@ with tabs[0]:
     if suggestions:
         st.dataframe(pd.DataFrame([{"Product":x["name"],"Category":x["category"],"HS codes":", ".join(x.get("hs_codes",[])) or "Pending","Mapping":x["status"]} for x in suggestions]),use_container_width=True,hide_index=True)
     opps = sample_opportunities()
-    matches = opps[opps["product"].str.casefold().eq(item.casefold())]
-    st.dataframe(matches if not matches.empty else pd.DataFrame([{"Status":"No validated opportunity yet","Action":"Collect verified data for this item"}]),use_container_width=True,hide_index=True)
+    product_categories = {p["name"]: p["category"] for p in catalogue}
+    opps["category"] = opps["product"].map(product_categories).fillna("Unclassified")
+    matches = opps[opps["product"].str.casefold().eq(item.casefold())].copy()
+    if category_filter != "All sectors":
+        matches = matches[matches["category"] == category_filter]
+    if opportunity_filter != "All opportunity types":
+        matches = matches[matches["type"] == opportunity_filter]
+    matches = matches[matches["score"] >= min_score]
+    if confidence_filter != "All confidence levels":
+        matches = matches[matches["confidence"] == confidence_filter]
+    if not show_illustrative:
+        matches = matches.iloc[0:0]
+    st.caption("Opportunity filters apply to the illustrative starter records below; live evidence-backed ranking is not connected yet.")
+    st.dataframe(matches if not matches.empty else pd.DataFrame([{"Status":"No opportunity matches the selected filters","Action":"Broaden filters or collect verified market, buyer and cost data"}]),use_container_width=True,hide_index=True)
 with tabs[1]:
     st.subheader("Import, export and market discovery")
     st.markdown("- [India Trade Intelligence & Analytics](https://trade-analytics.commerce.gov.in/public/indiaTrade)")
