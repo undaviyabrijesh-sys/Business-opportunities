@@ -66,7 +66,7 @@ c1.metric("Item", item or "—")
 c2.metric("Scope", scope)
 c3.metric("Business model", model)
 c4.metric("Capital profile", capital)
-tabs = st.tabs(["Overview","Opportunity engine","Live market data","Trade & export","International intelligence","Weather","News & trends","Tenders & buyers","Commercial model","Sources"])
+tabs = st.tabs(["Overview","Opportunity engine","Live market data","Trade & export","Buyer & seller search","Weather","News & trends","Tenders & buyers","Commercial model","Sources"])
 with tabs[0]:
     st.subheader(f"Opportunity workspace: {item}")
     st.info("Live ranking is withheld until price, trade, buyer and risk signals are connected and validated.")
@@ -303,8 +303,9 @@ with tabs[4]:
                         st.write("**Public phone:** " + " · ".join(lead["phones"]))
                     if lead.get("contact_url"):
                         st.markdown("[Open contact page](" + lead["contact_url"] + ")")
-                    elif not lead.get("emails") and not lead.get("phones"):
+                    if not lead.get("emails") and not lead.get("phones"):
                         st.caption("No public email/phone extracted; use the company website/contact page.")
+                    st.caption("Contact lookup: " + lead.get("contact_status", "Not checked"))
                     st.caption(lead.get("verification", "Unverified prospect."))
 
         buyer_tab, seller_tab = st.tabs(["Buyers / importers", "Sellers / manufacturers"])
