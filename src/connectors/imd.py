@@ -1,13 +1,7 @@
-"""IMD public API client.
-
-Endpoint names and fields follow the official IMD API reference. Check access
-conditions/headers on the portal before production use; do not hard-code keys.
-"""
+"""IMD client using documented API endpoints. No API key is hard-coded."""
 from __future__ import annotations
-
 import os
 from typing import Any
-
 import requests
 
 
