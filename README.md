@@ -87,6 +87,20 @@ Streamlit opportunity research desk
 - APScheduler or GitHub Actions for scheduled ingestion
 - pytest + Ruff for quality checks
 
+## Deploy as a public website
+
+This repository is a Streamlit web app. To publish it as a website, deploy the `main` branch with Streamlit Community Cloud:
+
+[![Deploy to Streamlit](https://static.streamlit.io/badges/streamlit_badge_black_white.svg)](https://share.streamlit.io/deploy?repository=undaviyabrijesh-sys%2FBusiness-opportunities&branch=main&mainModule=app.py)
+
+1. Open the deploy link and sign in to Streamlit Community Cloud with GitHub.
+2. Select this repository, branch `main`, and entrypoint `app.py`.
+3. Deploy. Streamlit will build the site from `requirements.txt`.
+4. In the app's Settings → Secrets, optionally add `COMTRADE_API_KEY` and `OGD_API_KEY`. Never put credentials in GitHub.
+5. Share the Streamlit app URL with people who should access the website.
+
+**Hosting note:** code changes are committed to GitHub, but the website is not publicly deployed by this repository change alone. A repository owner must authorize the first Streamlit Cloud deployment. Once deployed, pushes to `main` can be configured to update the site automatically.
+
 ## Run locally
 
 ```bash
@@ -130,7 +144,7 @@ Respect each source's terms, API keys, rate limits and redistribution rules. Pre
 
 ## Item research: search, weather, news, exports and tenders
 
-The dashboard accepts a free-text product search and opens an item research workspace. It includes trade/export market links, an international market-intelligence tab (CBI, Global Trade Helpdesk, ITC Trade Map, Export Potential Map, Access2Markets and India Trade Connect), an IMD forecast and district-warning lookup, item-keyword news discovery, CPPP/GeM tender links, APEDA buyer/seller leads and a basic unit-economics calculator. The international portals are currently research links, not automated data feeds.
+The dashboard includes an online product search engine. It searches the repository catalogue, retrieves product-related CBI/ITC research through public indexed RSS search, fetches market headlines, and can query global importer demand plus India's exports from UN Comtrade after the user confirms the HS code. Weather, tender, buyer and market-access sections provide source-specific research tools. Indexed research is not a direct CBI/ITC API, and trade statistics are not current prices or confirmed orders.
 
 See:
 - [Item research and exports workflow](docs/ITEM_RESEARCH_AND_EXPORTS.md)
