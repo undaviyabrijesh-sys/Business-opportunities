@@ -1,4 +1,6 @@
 import json
+import os
+from datetime import date
 from pathlib import Path
 from urllib.parse import quote_plus
 import pandas as pd
@@ -10,8 +12,19 @@ from src.connectors.apeda import opportunity_links
 from src.connectors.tenders import CPPP_ADVANCED_SEARCH, CPPP_HOME, GEM_BIDS
 from src.connectors.imd import IMDClient
 from src.connectors.news import search_product_news, PIB_RSS
+from src.connectors.live_market import fetch_agmarknet_prices, fetch_india_trade
 
 ROOT = Path(__file__).parent
+
+def configured_secret(name: str):
+    try:
+        value = st.secrets.get(name)
+        if value:
+            return str(value)
+    except Exception:
+        pass
+    return os.getenv(name)
+
 st.set_page_config(page_title="Opportunity Intelligence", page_icon="🌐", layout="wide")
 st.markdown("""<style>.stApp{background:linear-gradient(135deg,#0b1220,#111c30,#101827);color:#e7eef9}[data-testid="stSidebar"]{background:#0a1322}div[data-testid="stMetric"]{background:rgba(25,42,65,.62);border:1px solid #253b59;padding:14px;border-radius:12px}.hero{padding:22px;border:1px solid #28415f;border-radius:16px;background:linear-gradient(110deg,#16304c,#0c1b2d)}.muted{color:#91a6c2}</style>""", unsafe_allow_html=True)
 st.markdown('<div class="hero"><div class="muted">GLOBAL MARKET SCOUT · INDIA FIRST</div><h1>Opportunity Intelligence Desk</h1><div class="muted">Search any item. Discover sourcing, export markets, buyers, weather, news and tenders.</div></div>', unsafe_allow_html=True)
@@ -52,7 +65,7 @@ c1.metric("Item", item or "—")
 c2.metric("Scope", scope)
 c3.metric("Business model", model)
 c4.metric("Capital profile", capital)
-tabs = st.tabs(["Overview","Opportunity engine","Trade & export","Weather","News & trends","Tenders & buyers","Commercial model","Sources"])
+tabs = st.tabs(["Overview","Opportunity engine","Live market data","Trade & export","Weather","News & trends","Tenders & buyers","Commercial model","Sources"])
 with tabs[0]:
     st.subheader(f"Opportunity workspace: {item}")
     st.info("Live ranking is withheld until price, trade, buyer and risk signals are connected and validated.")
@@ -142,6 +155,72 @@ with tabs[1]:
         st.markdown("- Validate machinery, premises, licences, manpower, utilities and contingency capex")
 
 with tabs[2]:
+    st.subheader("Live source data")
+    st.caption("Fetch current records from official data services. Source and retrieval time are displayed.")
+    ogd_key = configured_secret("OGD_API_KEY")
+    comtrade_key = configured_secret("COMTRADE_API_KEY")
+    left, right = st.columns(2)
+    left.metric("AGMARKNET / OGD", "Configured" if ogd_key else "API key needed")
+    right.metric("UN Comtrade", "API key configured" if comtrade_key else "Public preview mode")
+    st.markdown("#### India mandi prices")
+    if st.button("Fetch live mandi prices", key="fetch_mandi"):
+        if not ogd_key:
+            st.error("Add OGD_API_KEY in Streamlit app Secrets or server environment.")
+        else:
+            try:
+                result = fetch_agmarknet_prices(item, ogd_key)
+                st.caption("Source: " + result["source"] + " | Retrieved: " + result["retrieved_at"] + " | Matched rows: " + str(result["matched_records"]))
+                if result["records"]:
+                    df = pd.DataFrame(result["records"])
+                    for col in ["min_price", "max_price", "modal_price"]:
+                        df[col] = pd.to_numeric(df[col], errors="coerce")
+                    st.dataframe(df, use_container_width=True, hide_index=True)
+                    prices = df.dropna(subset=["modal_price"])
+                    if len(prices) >= 2:
+                        x,y,z = st.columns(3)
+                        x.metric("Average modal price", "INR {:,.0f}/quintal".format(prices["modal_price"].mean()))
+                        y.metric("Lowest market quote", "INR {:,.0f}".format(prices["modal_price"].min()))
+                        z.metric("Highest market quote", "INR {:,.0f}".format(prices["modal_price"].max()))
+                else:
+                    st.warning("API responded but no returned rows matched this item.")
+            except Exception as exc:
+                st.error("AGMARKNET request failed: " + str(exc))
+    st.divider()
+    st.markdown("#### India international trade")
+    candidate_codes = sorted({str(code) for product in suggestions for code in product.get("hs_codes", []) if str(code).isdigit()})
+    if candidate_codes:
+        hs_code = st.selectbox("Candidate HS code", candidate_codes, key="live_hs_code")
+        confirmed = st.checkbox("I verified this HS code for exact product form, grade and year", key="live_hs_confirm")
+        flow = st.selectbox("Trade flow", ["Exports", "Imports"], key="live_trade_flow")
+        years = date.today().year
+        periods = ",".join(str(y) for y in range(years - 3, years + 1))
+        if st.button("Fetch UN Comtrade records", key="fetch_comtrade"):
+            if not confirmed:
+                st.warning("Confirm HS classification first. Catalogue codes are candidate mappings only.")
+            else:
+                try:
+                    result = fetch_india_trade(hs_code, periods, "X" if flow == "Exports" else "M", comtrade_key)
+                    st.caption("Source: " + result["source"] + " | Retrieved: " + result["retrieved_at"] + " | Status: " + result["source_status"])
+                    if result["records"]:
+                        df = pd.DataFrame(result["records"])
+                        df["trade_value_usd"] = pd.to_numeric(df["trade_value_usd"], errors="coerce")
+                        st.dataframe(df, use_container_width=True, hide_index=True)
+                        annual = df.groupby("period")["trade_value_usd"].sum().sort_index()
+                        if len(annual) >= 2:
+                            change = (annual.iloc[-1] / annual.iloc[-2] - 1) * 100 if annual.iloc[-2] else None
+                            a,b = st.columns(2)
+                            a.metric("Latest trade value", "USD {:,.0f}".format(annual.iloc[-1]))
+                            b.metric("Change vs prior period", "{:+.1f}%".format(change) if change is not None else "Not calculable")
+                    else:
+                        st.warning("No trade rows returned. Check HS code, period availability and API limits.")
+                except Exception as exc:
+                    st.error("UN Comtrade request failed: " + str(exc))
+    else:
+        st.info("No candidate HS code for this item. Classification is required; no code will be invented.")
+    st.caption("Trade data is not a live price or proof of reachable buyers. Validate HS revision, coverage and provisional periods.")
+    st.markdown("Add OGD_API_KEY and optionally COMTRADE_API_KEY in Streamlit App Settings → Secrets. Never commit credentials to GitHub.")
+
+with tabs[3]:
     st.subheader("Import, export and market discovery")
     st.markdown("- [India Trade Intelligence & Analytics](https://trade-analytics.commerce.gov.in/public/indiaTrade)")
     st.markdown("- [TradeStat monthly partner trade](https://tradestat.commerce.gov.in/ftspcc/ttrade_country_wise)")
