@@ -7,7 +7,7 @@ Status: official entrypoints researched. An adapter is not production-ready unti
 | Source | Data and use | Integration approach |
 |---|---|---|
 | [OGD Platform India](https://data.gov.in/) | Government datasets and APIs | Catalogue and documented API/download |
-| [AGMARKNET daily mandi prices](https://data.gov.in/resource/current-daily-price-various-commodities-various-markets-mandi) | Daily commodity/market/variety price and arrivals; domestic price spread | OGD API/CSV; normalize grade, unit and market |
+| [AGMARKNET daily mandi prices](https://data.gov.in/resource/current-daily-price-various-commodities-various-markets-mandi) | Daily commodity/market/variety price and arrivals; domestic price spread | Implemented adapter: resource 9ef84268-d588-465a-a308-a864a43d0070; requires OGD_API_KEY; exact commodity filter; normalize grade, unit and market |
 | [Commerce TIA](https://trade-analytics.commerce.gov.in/public/indiaTrade) | India trade by HS code and partner, sourced from DGCI&S | Official portal data extraction; retain HS version |
 | [TradeStat](https://tradestat.commerce.gov.in/ftspcc/ttrade_country_wise) | Monthly trade statistics | Official portal tables/downloads |
 | [IMD API portal](https://api.imd.gov.in/public/) and [reference](https://api.imd.gov.in/public/api_reference.html) | Forecasts, current observations, warnings, rainfall, port/highway warnings and agromet advisories | Official API; review access requirements |
@@ -51,3 +51,12 @@ Official PIB RSS, ministry/regulator notices, company filings and reputable medi
 Preserve source URL, retrieval/publication times, valid dates, source identifier, geography, product/HS code and nomenclature version, value/currency/unit, raw payload checksum, quality status, source vintage and transformation version.
 
 Never compare prices before grade, quality, packaging, units, currency, date and market-level normalization. Do not merge HS revisions without a concordance. Check source terms, rate limits, credentials, caching and redistribution before commercial use.
+
+
+## Implemented live-data adapters — 3 Nov 2026
+
+- AGMARKNET is queried from the data.gov.in resource API. The dataset publishes daily wholesale minimum, maximum and modal prices; its resource page showed an update on 31 Oct 2026 when checked. API credentials are required. The app does not label records live until a successful source response is returned.
+- UN Comtrade is queried by India reporter, World partner, HS code, trade flow and annual period. Public preview has a 500-record limit and permits one period per request; the adapter splits year lists into individual preview requests. Authenticated access uses the subscription endpoint.
+- Catalogue HS codes remain candidates. The UI requires explicit confirmation before querying trade statistics.
+- Configure OGD_API_KEY and optionally COMTRADE_API_KEY in Streamlit deployment Secrets or environment variables. Never commit credentials.
+- A mandi-price spread is only a screening lead. Grade, variety, moisture, date, transport, fees and market accessibility must be normalized before a trade decision.
