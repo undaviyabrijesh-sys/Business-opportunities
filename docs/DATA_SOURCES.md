@@ -82,3 +82,12 @@ Never compare prices before grade, quality, packaging, units, currency, date and
 - Catalogue HS codes remain candidates. The UI requires explicit confirmation before querying trade statistics.
 - Configure OGD_API_KEY and optionally COMTRADE_API_KEY in Streamlit deployment Secrets or environment variables. Never commit credentials.
 - A mandi-price spread is only a screening lead. Grade, variety, moisture, date, transport, fees and market accessibility must be normalized before a trade decision.
+
+
+## Product-specific international intelligence — implementation update
+
+- The Streamlit International intelligence tab now queries UN Comtrade for product imports across all reporting countries (reporter=ALL, partner=World) and India exports for a user-confirmed HS code.
+- Results are normalized with reporter, partner, period, trade flow, trade value, quantity and retrieval timestamp. The dashboard ranks the top importing markets for the latest returned year.
+- Public Comtrade preview is limited to 500 records per annual period. All-reporter results can therefore be incomplete; the UI labels the cap and does not interpret missing countries as zero demand.
+- Product-related CBI/ITC/Global Trade Helpdesk research articles are discovered through Google News RSS site queries. This is an indexed-search discovery layer, not a direct API or guarantee that every official report is indexed.
+- Access2Markets and portal-specific searches remain product-keyword search links until an official structured API or permitted downloadable dataset is available.
