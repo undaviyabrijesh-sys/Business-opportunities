@@ -39,6 +39,8 @@ Primary sources to start with:
 - Central Public Procurement Portal and GeM
 - MoSPI eSankhyiki / Index of Industrial Production
 - UN Comtrade
+- CBI Market Information, Global Trade Helpdesk and ITC Trade Map / Export Potential Map
+- European Commission Access2Markets and India Trade Connect
 - World Bank Commodity Markets / Pink Sheet
 - FAOSTAT and Eurostat
 
@@ -128,7 +130,7 @@ Respect each source's terms, API keys, rate limits and redistribution rules. Pre
 
 ## Item research: search, weather, news, exports and tenders
 
-The dashboard accepts a free-text product search and opens an item research workspace. It includes trade/export market links, an IMD forecast and district-warning lookup, item-keyword news discovery, CPPP/GeM tender links, APEDA buyer/seller leads and a basic unit-economics calculator.
+The dashboard accepts a free-text product search and opens an item research workspace. It includes trade/export market links, an international market-intelligence tab (CBI, Global Trade Helpdesk, ITC Trade Map, Export Potential Map, Access2Markets and India Trade Connect), an IMD forecast and district-warning lookup, item-keyword news discovery, CPPP/GeM tender links, APEDA buyer/seller leads and a basic unit-economics calculator. The international portals are currently research links, not automated data feeds.
 
 See:
 - [Item research and exports workflow](docs/ITEM_RESEARCH_AND_EXPORTS.md)
