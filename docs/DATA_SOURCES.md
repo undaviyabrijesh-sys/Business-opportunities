@@ -1,70 +1,53 @@
 # Data source registry
 
-Status means research/entrypoint verification, not completed automated ingestion. An adapter must be tested for licensing, schema stability, coverage, update cadence and reproducibility before it is treated as production-ready.
+Status: entrypoint and official documentation researched. No adapter is production-ready until access rules, schema, cadence, licensing and historical reproducibility are tested.
 
 ## India — priority sources
 
-| Source | What it provides | Business use | Integration approach | Priority |
-|---|---|---|---|---|
-| [OGD Platform India](https://data.gov.in/) | Government datasets and catalogued APIs | Common discovery layer for agriculture, economy, environment, infrastructure, MSMEs | Search catalog; use documented API/resource downloads and API keys where required | P0 |
-| [AGMARKNET / OGD daily mandi prices](https://data.gov.in/resource/current-daily-price-various-commodities-various-markets-mandi) | Daily commodity, market, variety, arrivals and min/modal/max price fields | Find regional price gaps, sourcing markets, destination markets and seasonality | OGD resource API/CSV; validate schema and commodity/unit mapping | P0 |
-| [Department of Commerce Trade Intelligence & Analytics](https://trade-analytics.commerce.gov.in/public/indiaTrade) | India exports/imports by HS commodity and partner, sourced from DGCI&S | Identify import dependence, export growth, destination markets and partner concentration | Portal exports / documented data extraction; preserve HS code version | P0 |
-| [TradeStat — monthly trade](https://tradestat.commerce.gov.in/ftspcc/ttrade_country_wise) | Monthly country/region and commodity foreign-trade statistics | Product-country screening and trend analysis | Portal tables/downloads; automate only via supported public interface | P0 |
-| [TradeStat — export commodity view](https://tradestat.commerce.gov.in/eidb/commodity_wise_export) | Annual commodity-wise trade statistics | HS code ranking, value/quantity trend | Portal tables/downloads | P0 |
-| [IMD API Management](https://api.imd.gov.in/public/) | Weather observations, forecasts, warnings and specialized bulletins | Crop/output disruptions, heat/rain risk, demand changes, logistics disruption | Register for access; use documented APIs; store issue time and validity window | P0 |
-| [Central Public Procurement Portal](https://eprocure.gov.in/) | Government tenders, awards and procurement notices | Detect institutional demand and buyer leads | Prefer published tender feeds/downloads; capture closing date, buyer, item, quantity and eligibility | P0 |
-| [GeM bids](https://bidplus.gem.gov.in/all-bids) | Government e-marketplace bid notices | Find government demand, product specifications and procurement buyers | Public bid pages; check terms and access restrictions before ingestion | P0 |
-| [MoSPI eSankhyiki](https://esankhyiki.mospi.gov.in/catalogue-main/catalogue) | Official statistics including IIP and national accounts datasets | Industrial demand proxies, manufacturing activity and sector expansion | Catalog downloads / available machine-readable formats | P1 |
-| [RBI DBIE](https://dbie.rbi.org.in/) | Banking, financial and macroeconomic time series | FX, rates, credit and macro risk context | Download/API where available; document series and frequency | P1 |
-| [APEDA](https://apeda.gov.in/) | Agricultural and processed food export information, market and product guidance | Export readiness, product-country opportunity discovery | Reports, dashboard and available datasets; verify reuse rights | P1 |
-| [Spices Board India](https://www.indianspices.com/) | Spices trade, export and market information | Spices sourcing/export opportunities | Official reports and data downloads | P1 |
-| [DPIIT Startup India — procurement](https://www.startupindia.gov.in/content/sih/en/public_procurement.html) | Procurement guidance and startup participation rules | Understand tender eligibility and startup relaxations | Reference/guidance, not primary transaction data | P2 |
+| Source | Data | Opportunity use | Integration |
+|---|---|---|---|
+| [OGD Platform India](https://data.gov.in/) | Central/state datasets and catalogue APIs | Government-data discovery | Catalogue search; documented API/resource downloads |
+| [AGMARKNET daily mandi prices via OGD](https://data.gov.in/resource/current-daily-price-various-commodities-various-markets-mandi) | Daily commodity/market/variety prices, arrivals, min/modal/max | Geographic price spreads, sourcing and seasonality | OGD API/CSV; normalize grade, unit and market identifiers |
+| [Department of Commerce Trade Intelligence & Analytics](https://trade-analytics.commerce.gov.in/public/indiaTrade) | India trade by HS code and partner, sourced from DGCI&S | Import dependence, export growth and destination selection | Portal exports/data extraction; version HS classification |
+| [TradeStat monthly statistics](https://tradestat.commerce.gov.in/ftspcc/ttrade_country_wise) | Monthly commodity/country/region trade | Product-country screening | Official portal tables/downloads |
+| [IMD API portal](https://api.imd.gov.in/public/) and [reference](https://api.imd.gov.in/public/api_reference.html) | Forecasts, current observations, warnings, rainfall, port/highway warnings, agromet advisories | Weather/crop/logistics disruption | Official API; check account/access requirements |
+| [Central Public Procurement Portal](https://eprocure.gov.in/eprocure/app) | Active tenders, corrigenda, awards | Institutional buyer demand | Public tender pages/downloads; no CAPTCHA bypass |
+| [GeM bids](https://bidplus.gem.gov.in/all-bids) | Government marketplace bids | Public-sector procurement | Public bid pages; confirm reuse terms |
+| [MoSPI eSankhyiki](https://esankhyiki.mospi.gov.in/catalogue-main/catalogue) | IIP and official statistics | Industrial activity proxy | Catalogue/downloads |
+| [RBI DBIE](https://dbie.rbi.org.in/) | FX, financial and macro time series | Currency and macro risk | Official downloads where available |
+| [APEDA AgriExchange](https://agriexchange.apeda.gov.in/Home/) | Export trends, destination/product info, buy/sell leads, exporter directory and market guidance | Agricultural and processed-food exports | Portal reporting and leads; verify counterparts |
+| [DGFT](https://www.dgft.gov.in/) | Foreign trade policy and notifications | Import/export restrictions and licensing | Official notifications; date-stamp policy |
+| [PIB RSS](https://pib.gov.in/RssMain.aspx?ModId=6&Lang=1&Regid=1) | Official press releases | Policy, investment and sector signals | RSS |
+| [FSSAI](https://www.fssai.gov.in/), [BIS](https://www.bis.gov.in/), [CPCB](https://cpcb.nic.in/) | Product standards and regulatory updates | Compliance risk | Official notices and standards |
 
 ## Global sources
 
-| Source | What it provides | Business use | Integration approach | Priority |
-|---|---|---|---|---|
-| [UN Comtrade](https://comtrade.un.org/) | Annual/monthly merchandise trade by reporter, partner and product; API | Discover importing countries, export suppliers, trade growth and concentration | Use official API; respect free-tier limits and subscription terms | P0 |
-| [World Bank Commodity Markets / Pink Sheet](https://www.worldbank.org/en/research/commodity-markets) | Historical and outlook commodity prices | Benchmark costs, price cycles and commodity risk | Download official XLSX/CSV/PDF; store revision date | P0 |
-| [FAOSTAT](https://www.fao.org/faostat/en/#data) | Agriculture, production, trade, food balances and prices | Crop supply/demand fundamentals and food commodity markets | FAOSTAT bulk/API services; document release vintage | P1 |
-| [Eurostat API](https://ec.europa.eu/eurostat/web/user-guides/data-browser/api-data-access) | EU trade and economic datasets via REST API | EU importer demand and market entry screening | REST API, dataset metadata and filters | P1 |
-| [World Bank Climate Change Knowledge Portal](https://climateknowledgeportal.worldbank.org/) | Historical and projected climate information | Long-horizon climate/production risk | Download/API where supported; never mix projections with weather forecasts | P1 |
-| [NOAA Climate Data Online](https://www.ncei.noaa.gov/cdo-web/) | Global historical climate observations and API | Historical weather anomalies and seasonality | API token; archive station/coverage metadata | P2 |
+| Source | Data | Opportunity use | Integration |
+|---|---|---|---|
+| [UN Comtrade](https://comtrade.un.org/) | Monthly/annual merchandise trade by product, reporter, partner | Import demand, export supply, competition | Official API; free-preview/subscription limits |
+| [World Bank Commodity Markets / Pink Sheet](https://www.worldbank.org/en/research/commodity-markets) | Historical commodity prices and outlook | Benchmarking and commodity risk | XLSX/CSV/PDF; separate observations from forecasts |
+| [FAOSTAT](https://www.fao.org/faostat/en/#data) | Production, agriculture trade, food balance and prices | Agri fundamentals | Bulk/API; store release vintage |
+| [Eurostat REST API](https://ec.europa.eu/eurostat/en/web/user-guides/data-browser/api-data-access/api-introduction) | EU trade/economic datasets | EU importer demand | REST API + metadata |
+| [World Bank Climate Knowledge Portal](https://climateknowledgeportal.worldbank.org/) | Historical and projected climate | Long-term climate exposure, not short-term weather | Keep projections separate |
+| [NOAA Climate Data Online](https://www.ncei.noaa.gov/cdo-web/) | Historical climate observations | Weather anomaly and seasonality | API token + coverage metadata |
 
 ## News and trend intelligence
 
-News is a leading indicator, not proof of demand. Start with official ministry/department press releases, regulator notices, company filings and reputable news metadata. Store headline, publisher, publication time, canonical URL, named entities, geography, product/HS-code tags and extracted claims. Deduplicate syndicated stories and keep the original link.
+Use news as a leading indicator, not proof of demand. Start with official PIB RSS, ministry/regulator announcements, company filings and reputable news metadata. Product-keyword news search is discovery-only. Save publisher, date, canonical URL, product/HS tags, geography and event type; deduplicate syndicated headlines.
 
-Potential official discovery points:
-- [PIB](https://pib.gov.in/) — Government of India announcements.
-- [Ministry of Commerce](https://www.commerce.gov.in/) — trade policy, export/import and schemes.
-- [DGFT](https://www.dgft.gov.in/) — foreign-trade policy, notifications and trade facilitation.
-- [FSSAI](https://www.fssai.gov.in/) — food compliance and regulatory changes.
-- [BIS](https://www.bis.gov.in/) — standards and mandatory certification information.
-- [CPCB](https://cpcb.nic.in/) — environmental regulation and pollution data.
+## Research verification notes — 3 November 2026
 
-## Data governance requirements
+- OGD's AGMARKNET daily mandi-price resource showed a recent update on 28 October 2026 and is attributed to the Directorate of Marketing & Inspection.
+- Department of Commerce TIA reports HS-code/partner coverage and attributes trade data to DGCI&S.
+- IMD's current API reference lists city forecasts, current weather, district warnings/nowcasts, rainfall, port/highway warnings and agromet advisories.
+- CPPP exposes active tenders, corrigenda, bid awards, search by location/organisation/classification and tender dates.
+- APEDA AgriExchange includes export statistics, buy leads, sell leads, exporter directory and market insights.
+- UN Comtrade API supports preview and subscribed access with different limits.
+- World Bank's October 2026 commodity page provides monthly prices and forecasts; forecasts must not be labelled realized prices.
+- MoSPI IIP is an industrial production indicator, not a direct measure of sales.
 
-Every record should carry:
-- source_id, source_url, retrieved_at_utc, published_at, valid_from, valid_to (when applicable)
-- source_record_id / original identifier
-- geography codes and original geographic label
-- product_id, HS code and HS nomenclature/version where applicable
-- value, currency, unit and conversion method
-- raw payload reference or archived file checksum
-- data quality status, revision/vintage and transformation version
+## Data governance
 
-Never compare prices until grade, quality, packaging, currency, quantity unit, market level (farmgate/mandi/wholesale/retail), tax treatment and date basis are compatible.
+Each record stores source_id, source_url, retrieved_at_utc, published_at, valid_from/to, original identifier, geography, product/HS code and nomenclature version, value, currency, unit, raw payload/checksum, quality status, revision/vintage and transformation version.
 
-## Verified research notes (3 Nov 2026)
-
-- OGD lists the daily mandi prices resource as updated on 28 Oct 2026 when checked. The underlying dataset is sourced through the Directorate of Marketing & Inspection and AGMARKNET.
-- Department of Commerce TIA reports HS8 and trading-partner coverage, with source attribution to DGCI&S; the portal displayed coverage through Aug 2026 at the time of review.
-- TradeStat's monthly foreign-trade view showed data through Sep 2026 and an update date of 28 Oct 2026.
-- IMD provides an official API Management Platform for real-time observations, forecasts, warnings and specialized bulletins.
-- NIC describes CPPP as a procurement platform with active tenders, global tenders and award details.
-- UN Comtrade provides product/partner trade data and API access, subject to access limits.
-- World Bank publishes commodity price series and outlooks; distinguish observed historical prices from forecast scenarios.
-- MoSPI's eSankhyiki catalogue exposes monthly IIP information; IIP is an industrial production indicator, not a direct sales measure.
-
-Use source publications for final claims and cite the original source in the product UI.
+Never compare price data until grade, quality, packaging, unit, currency, date basis and market level (farmgate/mandi/wholesale/retail) are compatible. Do not merge HS revisions without explicit concordance. Verify source terms, rate limits, API key requirements, caching and redistribution rights before commercial use.
