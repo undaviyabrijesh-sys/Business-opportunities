@@ -141,7 +141,7 @@ with tabs[1]:
         st.markdown("- Include receivables, payables, inventory buffers, tax, insurance, financing and FX in working capital")
         st.markdown("- Validate machinery, premises, licences, manpower, utilities and contingency capex")
 
-with tabs[7]:
+with tabs[2]:
     st.subheader("Import, export and market discovery")
     st.markdown("- [India Trade Intelligence & Analytics](https://trade-analytics.commerce.gov.in/public/indiaTrade)")
     st.markdown("- [TradeStat monthly partner trade](https://tradestat.commerce.gov.in/ftspcc/ttrade_country_wise)")
@@ -153,7 +153,7 @@ with tabs[7]:
     st.checkbox("Compare India export growth with destination imports",key="trade_compare")
     st.checkbox("Check destination tariffs and product standards",key="tariff_check")
     st.checkbox("Check freight, port, insurance and payment risk",key="logistics_check")
-with tabs[7]:
+with tabs[3]:
     st.subheader("Weather and operational disruption")
     st.write("Identify relevant production, warehouse, port or route locations, then enter their IMD IDs.")
     st.markdown("[Official IMD API portal](https://api.imd.gov.in/public/) · [API reference](https://api.imd.gov.in/public/api_reference.html)")
@@ -167,7 +167,7 @@ with tabs[7]:
             if not station_id.strip() and not district_id.strip(): st.warning("Enter an IMD identifier.")
         except Exception as exc: st.error(f"IMD request failed: {exc}")
     st.caption("Show issue time, validity, location, units and distinguish observations from forecasts.")
-with tabs[7]:
+with tabs[4]:
     st.subheader("News and emerging trends")
     st.write(f"Product query: {item}")
     st.markdown(f"- [Search item-related news](https://news.google.com/search?q={quote_plus(item)}&hl=en-IN&gl=IN&ceid=IN%3Aen)")
@@ -179,7 +179,7 @@ with tabs[7]:
             else: st.info("No headlines returned.")
         except Exception as exc: st.error(f"News feed request failed: {exc}")
     st.caption("News is a discovery signal, not verified demand. Corroborate with data and buyers.")
-with tabs[7]:
+with tabs[5]:
     st.subheader("Tenders, buyers and seller leads")
     st.write(f"Search terms: {item}")
     st.markdown(f"- [CPPP active tenders]({CPPP_HOME})")
@@ -189,7 +189,7 @@ with tabs[7]:
     st.markdown("- [APEDA Indian seller leads](https://agriexchange.apeda.gov.in/Seller/SellLead)")
     st.caption("CPPP may require CAPTCHA; no bypass is attempted. Check closing date, EMD, eligibility and corrigenda. APEDA leads are not pre-verified.")
     st.write(", ".join([item, f"{item} supply", f"{item} procurement", f"{item} tender"]))
-with tabs[7]:
+with tabs[6]:
     st.subheader("Commercial viability — unit economics")
     st.caption("Use actual quotes only; this calculator is not a live margin estimate.")
     a,b,c=st.columns(3)
