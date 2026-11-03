@@ -1,0 +1,6 @@
+[
+  {"product_id":"rice","name":"Rice","category":"Agriculture","hs_codes":["1006"],"unit":"tonne","markets":["India","Global"],"status":"starter_mapping"},
+  {"product_id":"turmeric","name":"Turmeric","category":"Spices","hs_codes":["091030"],"unit":"tonne","markets":["India","Global"],"status":"starter_mapping"},
+  {"product_id":"cotton","name":"Cotton","category":"Textiles & agriculture","hs_codes":["5201"],"unit":"tonne","markets":["India","Global"],"status":"starter_mapping"},
+  {"product_id":"pharma_excipients","name":"Pharmaceutical excipients","category":"Specialty chemicals","hs_codes":[],"unit":"kg","markets":["India","Global"],"status":"hs_mapping_required"}
+]
