@@ -1,26 +1,12 @@
-"""RSS-based news ingestion for official sources and product keyword search."""
+"""RSS discovery for official announcements and item-related news."""
 from __future__ import annotations
-
-from datetime import datetime, timezone
 from email.utils import parsedate_to_datetime
-from typing import Iterable
+from urllib.parse import quote_plus
 import re
-
 import feedparser
 import requests
 
 PIB_RSS = "https://pib.gov.in/RssMain.aspx?ModId=6&Lang=1&Regid=1"
-
-
-def _date(entry) -> str | None:
-    raw = entry.get("published") or entry.get("updated")
-    if not raw:
-        return None
-    try:
-        dt = parsedate_to_datetime(raw)
-        return dt.astimezone(timezone.utc).isoformat()
-    except (TypeError, ValueError, OverflowError):
-        return raw
 
 
 def fetch_rss(url: str, timeout: int = 20) -> list[dict]:
@@ -28,24 +14,26 @@ def fetch_rss(url: str, timeout: int = 20) -> list[dict]:
     response.raise_for_status()
     feed = feedparser.parse(response.content)
     rows = []
-    for item in feed.entries:
-        rows.append({
-            "title": item.get("title", ""),
-            "summary": re.sub(r"<[^>]+>", " ", item.get("summary", "") or "").strip(),
-            "url": item.get("link", ""),
-            "published_at": _date(item),
-            "source": feed.feed.get("title", url),
-        })
+    for entry in feed.entries:
+        published = entry.get("published") or entry.get("updated")
+        try:
+            published = parsedate_to_datetime(published).isoformat() if published else None
+        except (ValueError, TypeError):
+            pass
+        summary = re.sub(r"<[^>]+>", " ", entry.get("summary", "") or "").strip()
+        rows.append({"title": entry.get("title", ""), "summary": summary,
+                     "url": entry.get("link", ""), "published_at": published,
+                     "source": feed.feed.get("title", url)})
     return rows
 
 
 def search_product_news(item: str) -> list[dict]:
-    """Search Google News RSS for a product; returns linked headlines, not verified demand."""
-    from urllib.parse import quote_plus
     query = quote_plus(f'"{item}" (market OR demand OR export OR import OR price OR supply)')
     return fetch_rss(f"https://news.google.com/rss/search?q={query}&hl=en-IN&gl=IN&ceid=IN:en")
 
 
-def filter_keyword(rows: Iterable[dict], item: str) -> list[dict]:
-    terms = [t.lower() for t in re.findall(r"[A-Za-z0-9]+", item) if len(t) > 2]
-    return [r for r in rows if any(t in (r.get("title", "") + " " + r.get("summary", "")).lower() for t in terms)]
+def search_official_news(item: str) -> list[dict]:
+    terms = [term for term in item.split() if len(term) > 2]
+    rows = fetch_rss(PIB_RSS)
+    lowered = " ".join(terms).casefold()
+    return [row for row in rows if lowered in (row["title"] + " " + row["summary"]).casefold()]
