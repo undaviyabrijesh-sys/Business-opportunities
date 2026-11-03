@@ -236,97 +236,195 @@ with tabs[3]:
     st.checkbox("Check freight, port, insurance and payment risk",key="logistics_check")
 
 with tabs[4]:
-    st.subheader("Product-specific international intelligence")
-    st.write(f"Research query: **{item}**")
-    st.caption("This panel retrieves product-related trade records and indexed market-research articles. Trade values are annual import statistics, not current prices or confirmed orders.")
-    research_codes = sorted({str(code) for product in suggestions for code in product.get("hs_codes", []) if str(code).isdigit()})
-    if research_codes:
-        research_hs = st.selectbox("Candidate HS code for this product", research_codes, key="intel_hs_code")
-        research_confirmed = st.checkbox("I verified the HS code matches this exact product form and grade", key="intel_hs_confirm")
-    else:
-        research_hs = None
-        research_confirmed = False
-        st.warning("No catalogue HS code is available for this search. Research articles can still be searched, but trade rankings need a verified HS code.")
-    research_periods = ",".join(str(y) for y in range(date.today().year - 4, date.today().year - 1))
-    st.caption(f"Trade period requested: {research_periods}. UN Comtrade annual data can be revised and country reporting coverage varies.")
-    if st.button("Run product intelligence search", type="primary", key="run_product_intelligence"):
-        with st.spinner("Searching market research and international trade records..."):
-            intel = {"item": item.strip(), "research": [], "global_imports": [], "india_exports": [], "errors": []}
-            try:
-                intel["research"] = search_market_research(item.strip())
-            except Exception as exc:
-                intel["errors"].append("Research search: " + str(exc))
-            if research_hs and research_confirmed:
-                try:
-                    global_result = fetch_global_import_markets(research_hs, research_periods, configured_secret("COMTRADE_API_KEY"))
-                    intel["global_imports"] = global_result["records"]
-                    intel["global_meta"] = {k: global_result[k] for k in ["source", "retrieved_at", "source_status", "preview_limit", "periods"]}
-                except Exception as exc:
-                    intel["errors"].append("Global importer data: " + str(exc))
-                try:
-                    india_result = fetch_india_trade(research_hs, research_periods, "X", configured_secret("COMTRADE_API_KEY"))
-                    intel["india_exports"] = india_result["records"]
-                    intel["india_meta"] = {k: india_result[k] for k in ["source", "retrieved_at", "source_status", "periods"]}
-                except Exception as exc:
-                    intel["errors"].append("India export data: " + str(exc))
-            elif research_hs:
-                intel["errors"].append("Trade data not queried: confirm the HS code first.")
-            st.session_state["product_intelligence_results"] = intel
-    intel = st.session_state.get("product_intelligence_results", {})
-    if intel and intel.get("item", "").casefold() == item.strip().casefold():
-        if intel.get("errors"):
-            for message in intel["errors"]:
-                st.warning(message)
-        st.markdown("#### Global importing markets")
-        if intel.get("global_imports"):
-            trade_df = pd.DataFrame(intel["global_imports"])
-            trade_df["trade_value_usd"] = pd.to_numeric(trade_df["trade_value_usd"], errors="coerce")
-            trade_df["period"] = trade_df["period"].astype(str)
-            latest_period = trade_df["period"].max()
-            latest = trade_df[trade_df["period"] == latest_period].dropna(subset=["trade_value_usd"])
-            latest = latest.groupby("reporter", as_index=False)["trade_value_usd"].sum().sort_values("trade_value_usd", ascending=False).head(15)
-            if not latest.empty:
-                m1,m2 = st.columns(2)
-                m1.metric("Countries with import records", f"{trade_df['reporter'].nunique():,}")
-                m2.metric(f"Top reported importer · {latest_period}", str(latest.iloc[0]["reporter"]))
-                st.bar_chart(latest.set_index("reporter")["trade_value_usd"], y_label="Import value (USD)")
-                st.dataframe(latest.rename(columns={"reporter":"Importing country","trade_value_usd":"Import value (USD)"}), use_container_width=True, hide_index=True)
-            st.caption("Source: UN Comtrade · Values are reporter-reported imports from World. Preview queries are capped at 500 records per year; missing countries may reflect reporting or preview limits.")
+    st.subheader("Online product search engine")
+    st.caption("Search once. The desk checks the product catalogue in this repository, indexed CBI/ITC research, market news and (after HS confirmation) UN Comtrade trade statistics.")
+
+    with st.form("online_product_search", clear_on_submit=False):
+        search_query = st.text_input(
+            "Search product, material or industry",
+            value=item,
+            placeholder="e.g. HPMC, lactose, turmeric, aluminium foil, solar panels",
+            key="online_product_query",
+        )
+        search_submitted = st.form_submit_button("Search online", type="primary", use_container_width=True)
+
+    if search_submitted:
+        query = search_query.strip()
+        if not query:
+            st.warning("Enter a product or industry to search.")
         else:
-            st.info("No global import records were returned for this HS code and period. Check classification, reporting coverage or API limits.")
-        st.markdown("#### India's export position")
-        if intel.get("india_exports"):
-            india_df = pd.DataFrame(intel["india_exports"])
-            india_df["trade_value_usd"] = pd.to_numeric(india_df["trade_value_usd"], errors="coerce")
-            india_annual = india_df.groupby("period")["trade_value_usd"].sum().sort_index()
-            if not india_annual.empty:
-                x,y = st.columns(2)
-                x.metric("India exports · latest period", f"USD {india_annual.iloc[-1]:,.0f}")
-                if len(india_annual) > 1 and india_annual.iloc[-2]:
-                    y.metric("Year-on-year change", f"{(india_annual.iloc[-1] / india_annual.iloc[-2] - 1) * 100:+.1f}%")
-                st.dataframe(india_df[["period","reporter","partner","trade_value_usd","net_weight_kg","quantity_unit"]], use_container_width=True, hide_index=True)
+            result = {"query": query, "research": [], "news": [], "errors": []}
+            with st.spinner(f"Searching online sources for {query}..."):
+                try:
+                    result["research"] = search_market_research(query)
+                except Exception as exc:
+                    result["errors"].append("CBI / ITC indexed research: " + str(exc))
+                try:
+                    result["news"] = search_product_news(query)
+                except Exception as exc:
+                    result["errors"].append("Market news: " + str(exc))
+            result["catalogue_matches"] = item_dossier_plan(query)["suggestions"]
+            result["searched_at"] = date.today().isoformat()
+            st.session_state["online_product_search_results"] = result
+            st.session_state.pop("online_trade_results", None)
+
+    online = st.session_state.get("online_product_search_results", {})
+    active_query = st.session_state.get("online_product_query", item).strip()
+    if online and online.get("query", "").casefold() == active_query.casefold():
+        st.markdown(f"### Results for {online['query']}")
+        st.caption(f"Search date: {online.get('searched_at', '—')} · Sources: repository catalogue, indexed research search and Google News RSS")
+        if online.get("errors"):
+            for error in online["errors"]:
+                st.warning(error)
+
+        matches = online.get("catalogue_matches", [])
+        st.markdown("#### Product matches from our repository")
+        if matches:
+            st.dataframe(pd.DataFrame([{
+                "Product": x["name"],
+                "Sector": x.get("category", "—"),
+                "Candidate HS codes": ", ".join(x.get("hs_codes", [])) or "Not mapped",
+                "Match": x.get("match_reason", "—"),
+                "Match score": x.get("match_score", 0),
+                "Classification": x.get("status", "Needs review"),
+            } for x in matches]), use_container_width=True, hide_index=True)
         else:
-            st.info("No India export records returned for the selected HS code and period.")
-        st.markdown("#### Product-related CBI / ITC research")
-        if intel.get("research"):
-            for row in intel["research"][:12]:
-                st.markdown(f"**[{row['title']}]({row['url']})**")
+            st.info("No catalogue match. The online search still runs for new products; HS classification must be researched separately.")
+
+        left, right = st.columns(2)
+        left.metric("Market research results", len(online.get("research", [])))
+        right.metric("Market news results", len(online.get("news", [])))
+
+        st.markdown("#### CBI / ITC / trade research")
+        if online.get("research"):
+            for row in online["research"][:10]:
+                title = row.get("title") or "Open research result"
+                url = row.get("url") or ""
+                if url:
+                    st.markdown(f"**[{title}]({url})**")
+                else:
+                    st.markdown(f"**{title}**")
                 if row.get("summary"):
-                    st.caption(row["summary"][:500])
-                st.caption(f"{row.get('source','Search result')} · {row.get('published_at') or 'Publication date unavailable'}")
+                    st.write(row["summary"][:450])
+                st.caption(f"{row.get('source', 'Indexed search')} · {row.get('published_at') or 'Date not supplied'}")
         else:
-            st.info("No indexed CBI/ITC research results were returned for this query. Try a broader product name or synonym.")
-        st.caption("Research articles are discovered through a public news/search RSS index and must be opened and checked. This is not a direct CBI or ITC API.")
+            st.info("No indexed CBI/ITC results were returned. Try a product synonym, material name or broader category.")
+
+        st.markdown("#### Latest market news")
+        if online.get("news"):
+            for row in online["news"][:12]:
+                if row.get("url"):
+                    st.markdown(f"- **[{row.get('title', 'News result')}]({row['url']})**")
+                else:
+                    st.markdown(f"- **{row.get('title', 'News result')}**")
+                st.caption(f"{row.get('source', 'News feed')} · {row.get('published_at') or 'Date not supplied'}")
+        else:
+            st.info("No news headlines were returned for this query.")
+
+        st.divider()
+        st.markdown("#### Trade demand by destination")
+        matched_codes = sorted({
+            str(code)
+            for product in matches
+            for code in product.get("hs_codes", [])
+            if str(code).isdigit()
+        })
+        if matched_codes:
+            trade_code = st.selectbox("Candidate HS code", matched_codes, key="online_trade_hs_code")
+            trade_confirmed = st.checkbox(
+                "I verified this HS code for the exact product form, grade and classification year",
+                key="online_trade_hs_confirm",
+            )
+            trade_periods = ",".join(str(year) for year in range(date.today().year - 4, date.today().year - 1))
+            st.caption(f"Annual periods: {trade_periods}. Catalogue codes are candidates, not certified classifications.")
+            if st.button("Load global import markets + India exports", key="online_load_trade"):
+                if not trade_confirmed:
+                    st.warning("Confirm the HS code before querying trade statistics.")
+                else:
+                    trade_result = {"query": online["query"], "global_imports": [], "india_exports": [], "errors": []}
+                    with st.spinner("Retrieving UN Comtrade records..."):
+                        try:
+                            global_data = fetch_global_import_markets(
+                                trade_code, trade_periods, configured_secret("COMTRADE_API_KEY")
+                            )
+                            trade_result["global_imports"] = global_data["records"]
+                            trade_result["global_meta"] = {
+                                "source": global_data["source"],
+                                "retrieved_at": global_data["retrieved_at"],
+                                "status": global_data["source_status"],
+                                "preview_limit": global_data.get("preview_limit"),
+                            }
+                        except Exception as exc:
+                            trade_result["errors"].append("Global imports: " + str(exc))
+                        try:
+                            india_data = fetch_india_trade(
+                                trade_code, trade_periods, "X", configured_secret("COMTRADE_API_KEY")
+                            )
+                            trade_result["india_exports"] = india_data["records"]
+                            trade_result["india_meta"] = {
+                                "source": india_data["source"],
+                                "retrieved_at": india_data["retrieved_at"],
+                                "status": india_data["source_status"],
+                            }
+                        except Exception as exc:
+                            trade_result["errors"].append("India exports: " + str(exc))
+                    st.session_state["online_trade_results"] = trade_result
+            trade_data = st.session_state.get("online_trade_results", {})
+            if trade_data and trade_data.get("query", "").casefold() == online["query"].casefold():
+                for error in trade_data.get("errors", []):
+                    st.warning(error)
+                global_rows = trade_data.get("global_imports", [])
+                if global_rows:
+                    trade_df = pd.DataFrame(global_rows)
+                    trade_df["trade_value_usd"] = pd.to_numeric(trade_df["trade_value_usd"], errors="coerce")
+                    trade_df["period"] = trade_df["period"].astype(str)
+                    latest_period = trade_df["period"].max()
+                    top_markets = (
+                        trade_df[trade_df["period"] == latest_period]
+                        .dropna(subset=["trade_value_usd"])
+                        .groupby("reporter", as_index=False)["trade_value_usd"]
+                        .sum()
+                        .sort_values("trade_value_usd", ascending=False)
+                        .head(15)
+                    )
+                    if not top_markets.empty:
+                        m1, m2 = st.columns(2)
+                        m1.metric("Countries reporting imports", trade_df["reporter"].nunique())
+                        m2.metric(f"Top importer · {latest_period}", str(top_markets.iloc[0]["reporter"]))
+                        st.bar_chart(top_markets.set_index("reporter")["trade_value_usd"], y_label="Import value (USD)")
+                        st.dataframe(
+                            top_markets.rename(columns={
+                                "reporter": "Importing country",
+                                "trade_value_usd": "Import value (USD)",
+                            }),
+                            use_container_width=True,
+                            hide_index=True,
+                        )
+                    st.caption(
+                        "UN Comtrade reported imports from World. Public preview is limited to 500 records per period; "
+                        "missing countries may reflect preview/reporting coverage, not zero demand."
+                    )
+                else:
+                    st.info("No global import records returned for this HS code and period.")
+                india_rows = trade_data.get("india_exports", [])
+                if india_rows:
+                    india_df = pd.DataFrame(india_rows)
+                    india_df["trade_value_usd"] = pd.to_numeric(india_df["trade_value_usd"], errors="coerce")
+                    annual = india_df.groupby("period")["trade_value_usd"].sum().sort_index()
+                    if not annual.empty:
+                        x, y = st.columns(2)
+                        x.metric("India exports · latest year", f"USD {annual.iloc[-1]:,.0f}")
+                        if len(annual) > 1 and annual.iloc[-2]:
+                            y.metric("Change vs previous year", f"{(annual.iloc[-1] / annual.iloc[-2] - 1) * 100:+.1f}%")
+                        st.dataframe(india_df, use_container_width=True, hide_index=True)
+                else:
+                    st.info("No India export records returned for the selected product code.")
+                st.caption("Trade statistics are annual indicators, not current prices, buyer confirmations or guaranteed sales.")
+        else:
+            st.info("No candidate HS code is mapped to this search. Online research and news are available; trade ranking needs verified classification.")
     else:
-        st.info("Enter a product in the sidebar and run the search to populate this panel with matching results.")
-    st.divider()
-    st.markdown("#### Product-specific market access checks")
-    encoded_item = quote_plus(item)
-    st.markdown(f"- [CBI research results for {item}](https://www.google.com/search?q=site%3Acbi.eu%2Fmarket-information+{encoded_item})")
-    st.markdown(f"- [ITC research for {item}](https://www.google.com/search?q=site%3Aintracen.org+{encoded_item})")
-    st.markdown(f"- [Access2Markets requirements for {item}](https://www.google.com/search?q=site%3Atrade.ec.europa.eu%2Faccess-to-markets+{encoded_item})")
-    st.markdown(f"- [Global Trade Helpdesk search for {item}](https://www.google.com/search?q=site%3Aglobaltradehelpdesk.org+{encoded_item})")
-    st.caption("These search links are fallback research routes; they are not represented as in-app structured datasets.")
+        st.info("Search a product above. Results from online sources and our product catalogue will appear here.")
+    st.caption("Search coverage: public indexed CBI/ITC research and Google News RSS. This is not a direct CBI/ITC API; search results must be checked at the original publisher.")
 
 with tabs[5]:
     st.subheader("Weather and operational disruption")
