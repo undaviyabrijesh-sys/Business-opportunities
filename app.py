@@ -278,7 +278,43 @@ with tabs[4]:
     online = st.session_state.get("online_product_search_results", {})
     active_query = st.session_state.get("online_product_query", item).strip()
     if online and online.get("query", "").casefold() == active_query.casefold():
-        st.markdown(f"### Results for {online['query']}")
+        st.markdown(f"### Buyer & seller leads for {online['query']}")
+        st.caption(f"Search date: {online.get('searched_at', '—')} · Public web search results; leads are prospects, not confirmed orders.")
+        lead_data = online.get("leads", {})
+        buyer_col, seller_col = st.columns(2)
+        buyer_col.metric("Potential buyers / importers", len(lead_data.get("buyers", [])))
+        seller_col.metric("Potential sellers / manufacturers", len(lead_data.get("sellers", [])))
+
+        def render_company_leads(rows, heading):
+            st.markdown("#### " + heading)
+            if not rows:
+                st.info("No results returned. Try a grade, synonym, product form or broader term.")
+                return
+            for lead in rows:
+                with st.container(border=True):
+                    title = lead.get("title") or lead.get("domain") or "Company listing"
+                    st.markdown(f"**[{title}]({lead.get('url', '#')})**")
+                    st.caption(lead.get("domain", "") + " · " + lead.get("source", "Public web search"))
+                    if lead.get("snippet"):
+                        st.write(lead["snippet"])
+                    if lead.get("emails"):
+                        st.write("**Public email:** " + " · ".join(lead["emails"]))
+                    if lead.get("phones"):
+                        st.write("**Public phone:** " + " · ".join(lead["phones"]))
+                    if lead.get("contact_url"):
+                        st.markdown("[Open contact page](" + lead["contact_url"] + ")")
+                    elif not lead.get("emails") and not lead.get("phones"):
+                        st.caption("No public email/phone extracted; use the company website/contact page.")
+                    st.caption(lead.get("verification", "Unverified prospect."))
+
+        buyer_tab, seller_tab = st.tabs(["Buyers / importers", "Sellers / manufacturers"])
+        with buyer_tab:
+            render_company_leads(lead_data.get("buyers", []), "Potential buyers")
+        with seller_tab:
+            render_company_leads(lead_data.get("sellers", []), "Potential sellers")
+
+        st.divider()
+        st.markdown("### Supporting market research and trade data")
         st.caption(f"Search date: {online.get('searched_at', '—')} · Sources: repository catalogue, indexed research search and Google News RSS")
         if online.get("errors"):
             for error in online["errors"]:
