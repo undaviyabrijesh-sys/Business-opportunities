@@ -8,7 +8,7 @@ from __future__ import annotations
 
 import json
 import re
-from difflib import get_close_matches
+from difflib import SequenceMatcher
 from pathlib import Path
 from typing import Any
 
@@ -46,7 +46,7 @@ def suggest_products(query: str, limit: int = 8) -> list[dict]:
             score, reason = 82, "query_contains_product_term"
         else:
             candidates = [norm for _, norm in terms]
-            best = max((__import__("difflib").SequenceMatcher(None, q, term).ratio() for term in candidates), default=0)
+            best = max((SequenceMatcher(None, q, term).ratio() for term in candidates), default=0)
             if best >= 0.55:
                 score, reason = round(best * 75), "fuzzy_match"
         if score:
