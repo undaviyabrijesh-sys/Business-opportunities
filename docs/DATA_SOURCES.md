@@ -31,6 +31,28 @@ Status: official entrypoints researched. An adapter is not production-ready unti
 | [World Bank Climate Portal](https://climateknowledgeportal.worldbank.org/) | Long-term climate history/projections | Clearly separate projections from weather |
 | [NOAA Climate Data Online](https://www.ncei.noaa.gov/cdo-web/) | Historical climate observations | API token and station metadata |
 
+
+## International market intelligence portals
+
+These portals are added to the Streamlit **International intelligence** tab as product-research destinations. They are currently outbound research links, not automated data connectors. Users should retain the query, exact product description, HS code/revision, country pair, access date and source citation when recording findings.
+
+| Portal | Primary use | Current integration status / caveat |
+|---|---|---|
+| [CBI Market Information](https://www.cbi.eu/market-information) | Sector/product market studies, European market trends, buyer requirements, standards and market-entry guidance | Research portal link only. CBI covers selected sectors and does not broker trade or provide importer lists. |
+| [Global Trade Helpdesk](https://globaltradehelpdesk.org/) | Product and country trade opportunities, import demand, tariffs, regulations and partner discovery | Research portal link only. Data depth varies by country and product; no API ingestion claimed. |
+| [ITC Trade Map](https://www.trademap.org/Index.aspx) | Monthly/quarterly/annual trade values, quantities, growth, market shares, competing markets and company directory | Research portal link only. Access/registration and data availability can vary. Check direct versus mirror data and units. |
+| [ITC Export Potential Map](https://exportpotential.intracen.org/en/) | Modelled export potential and unrealised potential by product, exporter and destination | Research portal link only. Modelled potential is not a sales forecast or confirmed demand. |
+| [ITC Market Analysis Tools](https://marketanalysis.intracen.org/en) | Landing page for Trade Map, Export Potential Map, Market Access Map and related tools | Research portal link only; some features may require registration or have access limits. |
+| [European Commission Access2Markets](https://trade.ec.europa.eu/access-to-markets/en/home) | Tariffs, taxes, rules of origin, customs procedures, product requirements and trade barriers | Research portal link only. Especially useful for EU market access; select origin, destination and product accurately. |
+| [India Trade Connect](https://www.trade.gov.in/) | India exporter support, market access information, export trends, FTA benefits and institutional connections | Research portal link only. Login/registration may be required for some services. |
+
+### Research governance
+
+- Never treat a portal's export-potential estimate as a confirmed order, buyer commitment or achievable revenue.
+- Never treat company directory entries or buyer leads as vetted counterparties. Independently verify legal identity, operating status, references, sanctions exposure, payment terms and credit risk.
+- Compare exact product form, grade, packaging, HS revision, reporting period, quantity unit, currency and valuation basis before combining statistics.
+- These portals are not yet programmatic feeds. Do not claim live synchronization until an official API/download workflow has been implemented, tested and source terms reviewed.
+
 ## News and trends
 
 Official PIB RSS, ministry/regulator notices, company filings and reputable media metadata. Item-keyword news feeds are discovery only, not proof of demand. Preserve publisher, date, canonical URL, product/HS tags and geography; deduplicate syndication.
