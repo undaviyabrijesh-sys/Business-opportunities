@@ -1,7 +1,7 @@
 """Public web discovery for potential product buyers and sellers."""
 from __future__ import annotations
 from html.parser import HTMLParser
-from urllib.parse import parse_qs, unquote, urlparse
+from urllib.parse import parse_qs, unquote, urlparse, urljoin
 from datetime import datetime, timezone
 import re
 import requests
@@ -56,9 +56,12 @@ class ResultParser(HTMLParser):
 
 
 def unwrap_url(raw):
-    parsed = urlparse(raw or "")
-    if parsed.netloc.endswith("duckduckgo.com") and parsed.path.startswith("/l/"):
-        return unquote(parse_qs(parsed.query).get("uddg", [""])[0])
+    raw = urljoin("https://duckduckgo.com/", raw or "")
+    parsed = urlparse(raw)
+    is_ddg = parsed.netloc == "duckduckgo.com" or parsed.netloc.endswith(".duckduckgo.com")
+    if is_ddg and parsed.path.startswith("/l/"):
+        target = unquote(parse_qs(parsed.query).get("uddg", [""])[0])
+        return target if urlparse(target).scheme in {"http", "https"} else ""
     return raw if parsed.scheme in {"http", "https"} else ""
 
 
