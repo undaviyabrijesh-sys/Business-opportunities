@@ -125,3 +125,19 @@ Weights are provisional and must be calibrated against observed outcomes. The in
 ## Responsible use
 
 Respect each source's terms, API keys, rate limits and redistribution rules. Prefer official APIs/downloads. Do not scrape authenticated or rate-limited portals in ways that violate terms. Preserve source URLs, retrieval timestamps, units, revisions and data lineage.
+
+## Item research: search, weather, news, exports and tenders
+
+The dashboard accepts a free-text product search and opens an item research workspace. It includes trade/export market links, an IMD forecast and district-warning lookup, item-keyword news discovery, CPPP/GeM tender links, APEDA buyer/seller leads and a basic unit-economics calculator.
+
+See:
+- [Item research and exports workflow](docs/ITEM_RESEARCH_AND_EXPORTS.md)
+- [Official source registry](docs/DATA_SOURCES.md)
+
+### Environment variables
+
+Copy `.env.example` to `.env` if using API connectors. Set keys only in your local environment or deployment secrets; never commit credentials. OGD resource calls require `OGD_API_KEY`; broader UN Comtrade use may require `COMTRADE_API_KEY`.
+
+Install dependencies with `pip install -r requirements.txt`, then run `streamlit run app.py`.
+
+Current data views clearly distinguish live portal lookups from illustrative/sample data. CPPP CAPTCHA is not bypassed, and user-submitted buyer/seller leads must be independently verified.
