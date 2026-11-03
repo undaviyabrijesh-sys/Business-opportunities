@@ -62,8 +62,9 @@ def fetch_agmarknet_prices(item: str, api_key: str, limit: int = 1000) -> dict:
         raise RuntimeError("OGD_API_KEY is required. Add it to Streamlit secrets or the app environment.")
     payload = OGDClient(api_key=api_key).records(
         AGMARKNET_RESOURCE_ID,
-        limit=max(1, min(int(limit), 1000)),
+        limit=max(1, min(int(limit), 100)),
         offset=0,
+        filters={"commodity": item},
     )
     rows = normalize_agmarknet(payload, item)
     return {
