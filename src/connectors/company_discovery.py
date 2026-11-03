@@ -15,13 +15,16 @@ PHONE_RE = re.compile(r"(?<!\w)(?:\+?\d[\d\s()./-]{7,}\d)(?!\w)")
 class ResultParser(HTMLParser):
     def __init__(self):
         super().__init__()
-        self.rows, self.current, self.capture, self.buffer = [], None, None, []
+        self.rows, self.current, self.capture, self.buffer, self.depth = [], None, None, [], 0
 
     def handle_starttag(self, tag, attrs):
         attrs = dict(attrs)
         classes = attrs.get("class", "").split()
-        if tag == "div" and "result" in classes:
+        if tag == "div" and "result" in classes and self.current is None:
             self.current = {"title": "", "url": "", "snippet": ""}
+            self.depth = 1
+        elif self.current is not None and tag == "div":
+            self.depth += 1
         elif self.current is not None and tag == "a" and "result__a" in classes:
             self.capture = "title"
             self.current["url"] = unwrap_url(attrs.get("href", ""))
@@ -42,9 +45,14 @@ class ResultParser(HTMLParser):
         elif self.capture == "snippet" and tag in {"a", "div"}:
             self.current["snippet"] = " ".join("".join(self.buffer).split())
             self.capture = None
-        if tag == "div" and self.current.get("url"):
-            self.rows.append(self.current)
-            self.current = None
+        if tag == "div":
+            self.depth -= 1
+            if self.depth <= 0:
+                if self.current.get("url"):
+                    self.rows.append(self.current)
+                self.current = None
+                self.capture = None
+                self.depth = 0
 
 
 def unwrap_url(raw):
@@ -120,12 +128,12 @@ def search_company_leads(product, market="India + Global", max_per_side=8,
                         rows.append(row)
             except requests.RequestException as exc:
                 result["errors"].append(f"{kind.title()} search: {exc}")
-        for row in rows[:max_per_side]:
+        for index, row in enumerate(rows[:max_per_side]):
             row.update({"emails": [], "phones": [], "contact_url": "",
                         "contact_status": "Not checked",
                         "verification": "Unverified prospect. Confirm current activity and product fit directly.",
                         "source": "DuckDuckGo public web search"})
-            if enrich_contacts:
+            if enrich_contacts and index < 3:
                 emails, phones, contact_url = _contacts(row["url"], session)
                 row.update({"emails": emails, "phones": phones, "contact_url": contact_url,
                             "contact_status": "Public details found" if emails or phones else
