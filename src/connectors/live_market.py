@@ -128,3 +128,35 @@ def fetch_india_trade(hs_code: str, periods: str, flow_code: str = "X", api_key:
         "source_status": "live_records" if rows else "live_query_no_records",
         "api_message": payload.get("messages"),
     }
+
+
+def fetch_global_import_markets(hs_code: str, periods: str, api_key: str | None = None) -> dict:
+    """Fetch product imports reported by all countries from UN Comtrade.
+
+    The public preview is limited to 500 records per annual period. The
+    caller must confirm the candidate HS code before requesting this data.
+    """
+    if not hs_code or not hs_code.isdigit():
+        raise ValueError("A numeric HS code is required.")
+    payload = ComtradeClient(api_key=api_key).query(
+        reporter_code="ALL",
+        partner_code="0",
+        cmd_code=hs_code,
+        period=periods,
+        flow_code="M",
+    )
+    rows = normalize_comtrade(payload)
+    return {
+        "records": rows,
+        "source": COMTRADE_SOURCE,
+        "reporter": "All reporting countries",
+        "partner": "World",
+        "flow": "Imports",
+        "hs_code": hs_code,
+        "periods": periods,
+        "retrieved_at": datetime.now(timezone.utc).isoformat(),
+        "matched_records": len(rows),
+        "source_status": "live_records" if rows else "live_query_no_records",
+        "api_message": payload.get("messages"),
+        "preview_limit": 500 if not api_key else None,
+    }
