@@ -156,7 +156,7 @@ with tabs[1]:
 
 with tabs[2]:
     st.subheader("Live source data")
-    st.caption("Fetch current records from official data services. Source and retrieval time are displayed.")
+    st.caption("Fetched on demand from official sources; this is not tick-by-tick pricing. AGMARKNET is a daily dataset, while UN Comtrade is annual trade statistics. Source and retrieval time are displayed.")
     ogd_key = configured_secret("OGD_API_KEY")
     comtrade_key = configured_secret("COMTRADE_API_KEY")
     left, right = st.columns(2)
