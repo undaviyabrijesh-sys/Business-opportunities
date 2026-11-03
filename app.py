@@ -11,7 +11,7 @@ from src.opportunity_engine import calculate_unit_economics, assess_capital_fit,
 from src.connectors.apeda import opportunity_links
 from src.connectors.tenders import CPPP_ADVANCED_SEARCH, CPPP_HOME, GEM_BIDS
 from src.connectors.imd import IMDClient
-from src.connectors.news import search_product_news, PIB_RSS
+from src.connectors.news import search_product_news, search_market_research, PIB_RSS
 from src.connectors.live_market import fetch_agmarknet_prices, fetch_india_trade, fetch_global_import_markets
 
 ROOT = Path(__file__).parent
