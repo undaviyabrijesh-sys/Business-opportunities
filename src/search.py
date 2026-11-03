@@ -33,6 +33,16 @@ def suggest_products(query: str, limit: int = 8) -> list[dict]:
     if not q:
         return []
     records = load_products()
+    category_matches = [record for record in records if normalize_text(record.get("category", "")) == q]
+    if category_matches:
+        results = []
+        for record in category_matches[:max(1, limit)]:
+            item = dict(record)
+            item["status"] = item.get("hs_status", "mapping_not_reviewed")
+            item["match_score"] = 100
+            item["match_reason"] = "category_match"
+            results.append(item)
+        return results
     ranked: list[tuple[int, dict]] = []
     for record in records:
         terms = [(term, normalize_text(term)) for term in _search_terms(record) if term]
