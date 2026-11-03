@@ -110,10 +110,10 @@ def search_company_leads(product, market="India + Global", max_per_side=8,
     session = session or requests.Session()
     region = "India" if market == "India only" else "India and international"
     queries = {
-        "buyers": [f'"{product}" importer buyer {region}',
-                   f'"{product}" bulk purchaser procurement company {region}'],
+        "buyers": [f'"{product}" importer buyer company {region}',
+                   f'site:volza.com "{product}" importers buyers'],
         "sellers": [f'"{product}" manufacturer supplier exporter {region}',
-                    f'"{product}" distributor wholesaler stockist {region}'],
+                    f'site:indiamart.com OR site:tradeindia.com "{product}" supplier manufacturer'],
     }
     result = {"query": product, "market": market, "buyers": [], "sellers": [],
               "errors": [], "searched_at": datetime.now(timezone.utc).isoformat(),
