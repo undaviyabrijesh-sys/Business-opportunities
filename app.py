@@ -232,7 +232,7 @@ with tabs[3]:
     st.checkbox("Compare India export growth with destination imports",key="trade_compare")
     st.checkbox("Check destination tariffs and product standards",key="tariff_check")
     st.checkbox("Check freight, port, insurance and payment risk",key="logistics_check")
-with tabs[3]:
+with tabs[4]:
     st.subheader("Weather and operational disruption")
     st.write("Identify relevant production, warehouse, port or route locations, then enter their IMD IDs.")
     st.markdown("[Official IMD API portal](https://api.imd.gov.in/public/) · [API reference](https://api.imd.gov.in/public/api_reference.html)")
@@ -246,7 +246,7 @@ with tabs[3]:
             if not station_id.strip() and not district_id.strip(): st.warning("Enter an IMD identifier.")
         except Exception as exc: st.error(f"IMD request failed: {exc}")
     st.caption("Show issue time, validity, location, units and distinguish observations from forecasts.")
-with tabs[4]:
+with tabs[5]:
     st.subheader("News and emerging trends")
     st.write(f"Product query: {item}")
     st.markdown(f"- [Search item-related news](https://news.google.com/search?q={quote_plus(item)}&hl=en-IN&gl=IN&ceid=IN%3Aen)")
@@ -258,7 +258,7 @@ with tabs[4]:
             else: st.info("No headlines returned.")
         except Exception as exc: st.error(f"News feed request failed: {exc}")
     st.caption("News is a discovery signal, not verified demand. Corroborate with data and buyers.")
-with tabs[5]:
+with tabs[6]:
     st.subheader("Tenders, buyers and seller leads")
     st.write(f"Search terms: {item}")
     st.markdown(f"- [CPPP active tenders]({CPPP_HOME})")
@@ -268,7 +268,7 @@ with tabs[5]:
     st.markdown("- [APEDA Indian seller leads](https://agriexchange.apeda.gov.in/Seller/SellLead)")
     st.caption("CPPP may require CAPTCHA; no bypass is attempted. Check closing date, EMD, eligibility and corrigenda. APEDA leads are not pre-verified.")
     st.write(", ".join([item, f"{item} supply", f"{item} procurement", f"{item} tender"]))
-with tabs[6]:
+with tabs[7]:
     st.subheader("Commercial viability — unit economics")
     st.caption("Use actual quotes only; this calculator is not a live margin estimate.")
     a,b,c=st.columns(3)
@@ -285,7 +285,7 @@ with tabs[6]:
     y.metric("Contribution / unit",f"₹{margin:,.2f}")
     z.metric("Total contribution",f"₹{margin*quantity:,.2f}")
     st.caption("Separately model duties, taxes, packaging, wastage, insurance, commission, finance, rejection, FX and working capital.")
-with tabs[7]:
+with tabs[8]:
     st.subheader("Source coverage and setup")
     st.markdown("- OGD/AGMARKNET: configure `OGD_API_KEY` for documented API access.")
     st.markdown("- IMD: use documented endpoints and check current access requirements.")
