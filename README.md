@@ -142,6 +142,17 @@ Weights are provisional and must be calibrated against observed outcomes. The in
 
 Respect each source's terms, API keys, rate limits and redistribution rules. Prefer official APIs/downloads. Do not scrape authenticated or rate-limited portals in ways that violate terms. Preserve source URLs, retrieval timestamps, units, revisions and data lineage.
 
+## Buyer and seller discovery
+
+The **Buyer & seller search** tab accepts a product name and runs separate public-web searches for potential importers/buyers and manufacturers/suppliers. It returns result titles, snippets, company website/source links and, for a limited number of public pages, attempts to extract published business email addresses and phone numbers. Contact/about pages are linked when found.
+
+Important limitations:
+- Search results are unverified prospects, not confirmed buyers, sellers, orders or endorsements.
+- Public email/phone extraction is best-effort; many companies publish only a contact form or block automated requests.
+- Search uses DuckDuckGo's public HTML results, which may change, rate-limit or return incomplete coverage. It is not a guaranteed lead database or a paid customs-data feed.
+- For shipment-level importer/exporter records and verified trade contacts, commercial providers such as Volza, Export Genius, ImportGenius or Panjiva may require subscriptions and must be evaluated/licensed separately.
+- Respect source terms, rate limits and privacy requirements. Do not send unsolicited bulk messages; verify each company and contact before outreach.
+
 ## Item research: search, weather, news, exports and tenders
 
 The dashboard includes an online product search engine. It searches the repository catalogue, retrieves product-related CBI/ITC research through public indexed RSS search, fetches market headlines, and can query global importer demand plus India's exports from UN Comtrade after the user confirms the HS code. Weather, tender, buyer and market-access sections provide source-specific research tools. Indexed research is not a direct CBI/ITC API, and trade statistics are not current prices or confirmed orders.
