@@ -21,7 +21,7 @@ with st.sidebar:
     scope = st.selectbox("Market scope", ["India domestic", "India → Global exports", "Global sourcing → India imports", "Global markets"])
     model = st.selectbox("Business model", ["Trading / distribution", "Export", "Import", "Manufacturing / processing", "Tender supply"])
     region = st.selectbox("Base location", ["Ahmedabad, Gujarat", "Other Gujarat", "Other India", "Global"])
-    capital = st.select_slider("Indicative capital", options=["Below ₹5 lakh", "₹5–25 lakh", "₹25–50 lakh", "₹50 lakh–₹2 crore", "Above ₹2 crore"])
+    capital = st.select_slider("Indicative capital", options=["Below ₹5 lakh", "₹5–25 lakh", "₹25–50 lakh", "₹50 lakh–₹2 crore", "Above ₹2 crore"], value="₹50 lakh–₹2 crore")
     st.caption("Live source connections require credentials or supported downloads.")
 
 plan = item_dossier_plan(item.strip() or "Turmeric")
