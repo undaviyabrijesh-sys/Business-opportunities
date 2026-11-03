@@ -51,3 +51,25 @@ def test_comtrade_normalization_preserves_period_and_currency_basis():
     assert rows[0]["reporter"] == "India"
     assert rows[0]["quantity_unit"] == "kg"
     assert rows[0]["source"] == "UN Comtrade"
+
+
+
+def test_comtrade_normalization_preserves_reporter_for_global_markets():
+    payload = {"data": [{
+        "period": "2024",
+        "reporterCode": 840,
+        "reporterDesc": "USA",
+        "partnerCode": 0,
+        "partnerDesc": "World",
+        "flowCode": "M",
+        "flowDesc": "Imports",
+        "cmdCode": "391239",
+        "cmdDesc": "Cellulose ethers",
+        "primaryValue": 987654,
+        "netWgt": 50000,
+        "qtyUnitAbbr": "kg",
+    }]}
+    row = normalize_comtrade(payload)[0]
+    assert row["reporter"] == "USA"
+    assert row["flow"] == "Imports"
+    assert row["trade_value_usd"] == 987654
